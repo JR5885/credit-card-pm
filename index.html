@@ -36,7 +36,7 @@
     .nav-badge-ops { background: #0052cc; }
     .nav-badge-risk { background: #6554c0; }
     .nav-badge-biz { background: #ff8b00; }
-    .nav-badge-kickoff { background: #e5493a; }
+    .nav-badge-kickoff { background: #0052cc; }
 
     /* Main Container */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -146,9 +146,7 @@
     .red-flag-alert:hover { background: #ffbdad; }
     @keyframes flagBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.97); } 100% { opacity: 1; transform: scale(1); } }
 
-    /* ========================================================
-       Gantt Workspace (Main & Sub Pipeline 60/30/10)
-       ======================================================== */
+    /* Gantt Workspace */
     .gantt-root { display: flex; flex: 1; border: 1px solid var(--jira-border); border-radius: 5px; background: #fff; overflow: hidden; position: relative; }
     .gantt-tree { width: var(--tree-w); min-width: 380px; max-width: 850px; background: #fafbfc; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
     .gantt-tree-header { height: 42px; border-bottom: 1px solid var(--jira-border); padding: 0 12px; display: flex; align-items: center; font-size: 11px; font-weight: 700; color: var(--jira-text-muted); }
@@ -228,17 +226,23 @@
     .form-group input:focus, .form-group select:focus { border-color: var(--jira-blue); }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 
-    /* Kickoff Meeting 樣式 */
+    /* ========================================================
+       Kickoff Meeting 專屬精緻樣式 (全欄位手動編輯)
+       ======================================================== */
     .kickoff-hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
-    .kickoff-rule-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px 16px; border-left: 4px solid #0052cc; }
-    .rule-card-title { font-size: 11px; font-weight: 800; color: var(--jira-text-muted); text-transform: uppercase; margin-bottom: 6px; }
-    .rule-card-target { font-size: 20px; font-weight: 800; color: #091e42; margin-bottom: 4px; }
-    .rule-card-desc { font-size: 12px; color: #5e6c84; line-height: 1.4; }
+    .kickoff-rule-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px 16px; border-left: 4px solid #0052cc; display: flex; flex-direction: column; gap: 6px; }
+    .rule-card-input-title { font-size: 11px; font-weight: 800; color: var(--jira-text-muted); text-transform: uppercase; border: none; background: transparent; outline: none; width: 100%; }
+    .rule-card-input-val { font-size: 20px; font-weight: 800; border: none; background: transparent; outline: none; width: 100%; }
+    .rule-card-input-desc { font-size: 12px; color: #5e6c84; line-height: 1.4; border: 1px solid transparent; border-radius: 4px; padding: 2px 4px; resize: none; background: transparent; }
+    .rule-card-input-desc:focus, .rule-card-input-title:focus, .rule-card-input-val:focus { background: #fff; border-color: #4c9aff; }
 
     .sprint-flow-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
-    .sprint-flow-card { background: #fafbfc; border: 1px solid var(--jira-border); border-radius: 6px; padding: 12px; }
-    .sprint-flow-card h4 { font-size: 13px; font-weight: 700; color: #0052cc; margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .sprint-flow-card p { font-size: 12px; color: #172b4d; line-height: 1.4; }
+    .sprint-flow-card { background: #fafbfc; border: 1px solid var(--jira-border); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .sprint-card-hdr { display: flex; justify-content: space-between; gap: 6px; }
+    .sprint-card-hdr input { font-size: 12px; font-weight: 700; color: #0052cc; border: 1px solid transparent; background: transparent; border-radius: 3px; padding: 2px; }
+    .sprint-card-hdr input:focus { background: #fff; border-color: #4c9aff; outline: none; }
+    .sprint-card-body textarea { font-size: 12px; color: #172b4d; line-height: 1.4; border: 1px solid transparent; background: transparent; width: 100%; resize: vertical; min-height: 48px; border-radius: 3px; padding: 2px; }
+    .sprint-card-body textarea:focus { background: #fff; border-color: #4c9aff; outline: none; }
 
     .raci-matrix-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; overflow: hidden; }
 
@@ -301,7 +305,7 @@
       <div class="nav-label" id="nav-lbl-collab">跨部門協作與戰略</div>
       <div class="nav-item" onclick="switchNav('kickoff')">
         <span id="nav-item-kickoff">🚀 Kickoff 會議戰略</span>
-        <span class="nav-badge nav-badge-kickoff" id="nav-badge-kickoff-txt">死命令</span>
+        <span class="nav-badge nav-badge-kickoff" id="nav-badge-kickoff-txt">核心指標</span>
       </div>
       <div class="nav-item" onclick="switchNav('samr')">
         <span id="nav-item-samr">🗣️ 跨部門開會 SAMR</span>
@@ -352,25 +356,22 @@
       </div>
     </div>
 
-    <!-- Top Action Bar (含持久化備份 / 匯入 / 縮放 / 語言切換) -->
+    <!-- Top Action Bar -->
     <header class="top-bar">
       <div class="top-left">
         <h1 id="pageTitle">產品迭代時程 (60/30/10 Roadmap)</h1>
       </div>
       <div class="top-right">
-        <!-- 備份與還原按鈕 -->
         <button class="btn" style="background:#42526e;" onclick="exportDataBackup()" title="匯出當前專案資料為 JSON 檔案">💾 備份</button>
         <button class="btn" style="background:#42526e;" onclick="document.getElementById('importFileInput').click()" title="從 JSON 檔案還原專案資料">📥 匯入</button>
         <input type="file" id="importFileInput" style="display:none;" accept=".json" onchange="importDataBackup(event)">
 
-        <!-- 週寬縮放 -->
         <div style="display: flex; align-items: center; gap: 4px; background: #f4f5f7; border: 1px solid var(--jira-border); border-radius: 4px; padding: 2px 6px;">
           <span style="font-size: 11px; color: var(--jira-text-muted); font-weight: 600;" id="txt-zoom-label">週寬縮放:</span>
           <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(-10)">－</button>
           <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(10)">＋</button>
         </div>
 
-        <!-- 全局語言切換 -->
         <div class="global-lang-tabs">
           <button class="global-lang-btn active" id="btn-global-zh" onclick="setGlobalLanguage('zh')">中文 (ZH)</button>
           <button class="global-lang-btn" id="btn-global-en" onclick="setGlobalLanguage('en')">English (ENG)</button>
@@ -403,7 +404,7 @@
           <div id="gantt-margin-alert-bar" style="display:none; background:#ffebe6; border:1px solid #ffbdad; border-radius:4px; padding:8px 14px; margin-bottom:12px; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#bf2600; font-weight:700;">
               <span style="font-size:16px;">🚨</span>
-              <span id="txt-gantt-alert-msg">【風控拒付率失守警報】信用卡 Chargeback 爭議率達 <strong id="alert-bar-margin-val">0.18%</strong>（高於 0.15% OKR 風險紅線）！已向「風控合約組 / 清算通道」觸發告警。</span>
+              <span id="txt-gantt-alert-msg">【風控拒付率警報】信用卡 Chargeback 爭議率達 <strong id="alert-bar-margin-val">0.18%</strong>（高於 0.15% OKR 風險紅線）！已向「風控合約組 / 清算通道」觸發告警。</span>
             </div>
             <button class="btn" style="background:#de350b; font-size:11px; padding:4px 10px;" id="btn-gantt-24h" onclick="triggerUrgentMeetingPrompt()">🚨 24 小時內召開緊急風控清算會議</button>
           </div>
@@ -570,58 +571,78 @@
         </div>
       </div>
 
-      <!-- Panel 5: Kickoff Meeting 專屬戰略看板 -->
+      <!-- Panel 5: Kickoff Meeting 專屬戰略看板 (全面手動可編輯，移除死字) -->
       <div id="view-kickoff" class="panel-view">
         <div class="panel-action-bar">
           <div>
             <h3 style="font-size:14px; font-weight:800; color:#091e42;" id="txt-ko-title">🚀 法幣信用卡產品 Kickoff 戰略宣誓 (全域對齊)</h3>
             <span style="font-size:12px; color:var(--jira-text-muted);" id="txt-ko-sub">
-              PM 組織核心：不逐字唸 PRD，只鎖死「目標底線、時間節奏、誰做什麼」。
+              PM 組織核心：不逐字唸 PRD，只鎖死「核心指標底線、時間節奏、誰做什麼」。所有欄位皆可點擊直接編輯。
             </span>
           </div>
-          <button class="btn" style="background:#e5493a;" onclick="alert('📢 專案死命令已全員廣播！每日 09:30 敏捷站會驗收推進進度。')">📢 宣誓確認</button>
+          <button class="btn" style="background:#0052cc;" onclick="publishWorkEmailNotice()">📧 確認並發布全員 WORK EMAIL</button>
         </div>
 
-        <!-- 1. 會議三大死命令 (底線指標) -->
+        <!-- 1. 三大交付基準指標 (卡片全欄位手動編輯) -->
         <div class="kickoff-hero-grid">
           <div class="kickoff-rule-card" style="border-left-color: #0052cc;">
-            <div class="rule-card-title" id="txt-ko-r1-t">1. 穩定度死命令 (STABILITY)</div>
-            <div class="rule-card-target" style="color: #0052cc;">≥ 98% / -20%</div>
-            <div class="rule-card-desc" id="txt-ko-r1-d">交易授權成功率守死 98% 以上；優化錯誤代碼引導，客服爭議事件降解 20%。</div>
+            <input class="rule-card-input-title" id="ko-c1-t" value="1. 穩定度基準指標 (STABILITY)" onchange="saveKickoffCustoms()">
+            <input class="rule-card-input-val" id="ko-c1-v" style="color: #0052cc;" value="≥ 98% / -20%" onchange="saveKickoffCustoms()">
+            <textarea class="rule-card-input-desc" id="ko-c1-d" rows="3" onchange="saveKickoffCustoms()">交易授權成功率守死 98% 以上；優化錯誤代碼引導，客服爭議事件降解 20%。</textarea>
           </div>
           <div class="kickoff-rule-card" style="border-left-color: #de350b;">
-            <div class="rule-card-title" id="txt-ko-r2-t">2. 風控死命令 (RISK CONTROL)</div>
-            <div class="rule-card-target" style="color: #de350b;">≤ 0.15%</div>
-            <div class="rule-card-desc" id="txt-ko-r2-d">信用卡拒付率 (Chargeback) 嚴守 0.15% 紅線；超過立即觸發 24H 緊急機制阻斷。</div>
+            <input class="rule-card-input-title" id="ko-c2-t" value="2. 風控基準指標 (RISK CONTROL)" onchange="saveKickoffCustoms()">
+            <input class="rule-card-input-val" id="ko-c2-v" style="color: #de350b;" value="≤ 0.15%" onchange="saveKickoffCustoms()">
+            <textarea class="rule-card-input-desc" id="ko-c2-d" rows="3" onchange="saveKickoffCustoms()">信用卡拒付率 (Chargeback) 嚴守 0.15% 紅線；超過立即觸發 24H 緊急機制阻斷。</textarea>
           </div>
           <div class="kickoff-rule-card" style="border-left-color: #36b37e;">
-            <div class="rule-card-title" id="txt-ko-r3-t">3. 合規清算死命令 (COMPLIANCE)</div>
-            <div class="rule-card-target" style="color: #36b37e;">100%</div>
-            <div class="rule-card-desc" id="txt-ko-r3-d">多國 KYC/AML 審查 100% 過關；T+1 對賬自動平帳覆蓋率 100%，對賬差異為 0。</div>
+            <input class="rule-card-input-title" id="ko-c3-t" value="3. 合規清算基準指標 (COMPLIANCE)" onchange="saveKickoffCustoms()">
+            <input class="rule-card-input-val" id="ko-c3-v" style="color: #36b37e;" value="100%" onchange="saveKickoffCustoms()">
+            <textarea class="rule-card-input-desc" id="ko-c3-d" rows="3" onchange="saveKickoffCustoms()">多國 KYC/AML 審查 100% 過關；T+1 對賬自動平帳覆蓋率 100%，對賬差異為 0。</textarea>
           </div>
         </div>
 
-        <!-- 2. 4 Sprints 迭代時間節奏 -->
+        <!-- 2. 4 Sprints 迭代時間節奏 (全欄位手動編輯) -->
         <div class="sprint-flow-row">
           <div class="sprint-flow-card">
-            <h4><span>Sprint 1 (W1-W2)</span><span>定規格</span></h4>
-            <p id="txt-ko-sp1-desc">搞定規格。Figma User Flow 確版、API 規格凍結、多國金融法規要求清單列清。</p>
+            <div class="sprint-card-hdr">
+              <input id="ko-sp1-t1" value="Sprint 1 (W1-W2)" onchange="saveKickoffCustoms()">
+              <input id="ko-sp1-t2" value="定規格" style="text-align:right; width:60px;" onchange="saveKickoffCustoms()">
+            </div>
+            <div class="sprint-card-body">
+              <textarea id="ko-sp1-d" onchange="saveKickoffCustoms()">搞定規格。Figma User Flow 確版、API 規格凍結、多國金融法規要求清單列清。</textarea>
+            </div>
           </div>
           <div class="sprint-flow-card">
-            <h4><span>Sprint 2 (W3-W4)</span><span>打通路</span></h4>
-            <p id="txt-ko-sp2-desc">把路打通。工程寫好扣款與錯誤提示、串接清算通道、高危卡段風控規則庫上線。</p>
+            <div class="sprint-card-hdr">
+              <input id="ko-sp2-t1" value="Sprint 2 (W3-W4)" onchange="saveKickoffCustoms()">
+              <input id="ko-sp2-t2" value="打通路" style="text-align:right; width:60px;" onchange="saveKickoffCustoms()">
+            </div>
+            <div class="sprint-card-body">
+              <textarea id="ko-sp2-d" onchange="saveKickoffCustoms()">把路打通。工程寫好扣款與錯誤提示、串接清算通道、高危卡段風控規則庫上線。</textarea>
+            </div>
           </div>
           <div class="sprint-flow-card">
-            <h4><span>Sprint 3 (W5-W6)</span><span>全壓測</span></h4>
-            <p id="txt-ko-sp3-desc">全速壓測。整合 3DS 授權、全鏈路沙盒壓測、模擬爭議拒付攔截，掃清重大 Bug。</p>
+            <div class="sprint-card-hdr">
+              <input id="ko-sp3-t1" value="Sprint 3 (W5-W6)" onchange="saveKickoffCustoms()">
+              <input id="ko-sp3-t2" value="全壓測" style="text-align:right; width:60px;" onchange="saveKickoffCustoms()">
+            </div>
+            <div class="sprint-card-body">
+              <textarea id="ko-sp3-d" onchange="saveKickoffCustoms()">全速壓測。整合 3DS 授權、全鏈路沙盒壓測、模擬爭議拒付攔截，掃清重大 Bug。</textarea>
+            </div>
           </div>
           <div class="sprint-flow-card">
-            <h4><span>Sprint 4 (W7-W8)</span><span>放量收</span></h4>
-            <p id="txt-ko-sp4-desc">驗收發版。首波放量 10% 灰度測試、Python 控制台監控、客訴降 20% 量化驗收。</p>
+            <div class="sprint-card-hdr">
+              <input id="ko-sp4-t1" value="Sprint 4 (W7-W8)" onchange="saveKickoffCustoms()">
+              <input id="ko-sp4-t2" value="放量收" style="text-align:right; width:60px;" onchange="saveKickoffCustoms()">
+            </div>
+            <div class="sprint-card-body">
+              <textarea id="ko-sp4-d" onchange="saveKickoffCustoms()">驗收發版。首波放量 10% 灰度測試、Python 控制台監控、客訴降 20% 量化驗收。</textarea>
+            </div>
           </div>
         </div>
 
-        <!-- 3. 各團隊分工與點名認領 (RACI 矩陣 - 可直接編輯) -->
+        <!-- 3. 各團隊分工與點名認領 (RACI 矩陣 - 全欄位手動編輯) -->
         <div class="raci-matrix-card">
           <table>
             <thead>
@@ -632,56 +653,7 @@
                 <th>交付標準 (Definition of Done)</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>產品經理 (PM)</strong></td>
-                <td><input type="text" value="陳虹汝 (Lead)"></td>
-                <td>排優先級、盯緊 4 Sprints 進度、用 Python/SQL 寫出監控儀表板。</td>
-                <td>Sprint 待辦無遺漏，儀表板實時監控成功率與拒付率。</td>
-              </tr>
-              <tr>
-                <td><strong>UI/UX 設計組</strong></td>
-                <td><input type="text" value="UI/UX 設計團隊"></td>
-                <td>把綁卡與支付失敗提示畫得夠清楚，讓用戶不要看不懂去罵客服。</td>
-                <td>Figma 全場景確版，通過前端研發與客服雙向簽核。</td>
-              </tr>
-              <tr>
-                <td><strong>前後端研發組</strong></td>
-                <td><input type="text" value="支付研發架構組"></td>
-                <td>把 API 寫好、清算通道接好、實時鎖匯搞定，API 延遲不超過 0.8 秒。</td>
-                <td>API 延遲 ≤ 800ms，單元測試覆蓋率 ≥ 85%，零重大 Bug。</td>
-              </tr>
-              <tr>
-                <td><strong>測試 QA 組</strong></td>
-                <td><input type="text" value="QA 驗收測試組"></td>
-                <td>把整個交易流程和 3DS 授權測到爛，保證極端狀況無當機。</td>
-                <td>全鏈路測試覆蓋率 100%，完成沙盒高並發壓力驗收。</td>
-              </tr>
-              <tr>
-                <td><strong>法務與合規組</strong></td>
-                <td><input type="text" value="合規風控主管"></td>
-                <td>確認多國金融牌照與 KYC/AML 流程完全符合當地監管法規。</td>
-                <td>金融合規審核 100% 過關，零法律與洗錢風險隱患。</td>
-              </tr>
-              <tr>
-                <td><strong>風控算法組</strong></td>
-                <td><input type="text" value="風控策略專家"></td>
-                <td>設定好高風險卡攔截規則，信用卡拒付率守死在 0.15% 以下。</td>
-                <td>Chargeback 爭議率 ≤ 0.15%，高危交易攔截率 ≥ 99%。</td>
-              </tr>
-              <tr>
-                <td><strong>財務清算組</strong></td>
-                <td><input type="text" value="清算財務專家"></td>
-                <td>確認每天自動平帳，手續費算對，清算賬目一毛不差。</td>
-                <td>T+1 自動平帳率 100%，對賬流水差異金額為 0。</td>
-              </tr>
-              <tr>
-                <td><strong>客戶服務組</strong></td>
-                <td><input type="text" value="客服運營主管"></td>
-                <td>背熟新錯誤代碼對照表與 SOP，目標客訴爭議案件下降 20%。</td>
-                <td>掌握新版代碼導引，爭議事件升級率降解 ≥ 20%。</td>
-              </tr>
-            </tbody>
+            <tbody id="kickoffRaciBody"></tbody>
           </table>
         </div>
       </div>
@@ -896,7 +868,6 @@
       "#172b4d", "#e5493a", "#00a3bf", "#403294"
     ];
 
-    // 預設核心資料庫 (60% 產研 / 30% 風控 / 10% 商務)
     const defaultTasks = [
       // 60% 產研 (Objective 1)
       { id: 100, isMain: true, key: "EPIC-01", name: "💳 信用卡綁卡流程與失敗引導優化 (UX 爭議降解 20%)", primary: "產品 PM (陳虹汝)", secondary: "前台產品組", type: "ops", color: "#0052cc", start: 0, duration: 8.0, progress: 85, jiraStatus: "dev" },
@@ -935,21 +906,35 @@
       }
     ];
 
-    // LocalStorage 持久化初始化
+    // 預設 Kickoff RACI 矩陣 (全欄位可編輯)
+    const defaultRaci = [
+      { id: 1, role: "產品經理 (PM)", lead: "陳虹汝 (Lead)", action: "排優先級、盯緊 4 Sprints 進度、用 Python/SQL 寫出監控儀表板。", dod: "Sprint 待辦無遺漏，儀表板實時監控成功率與拒付率。" },
+      { id: 2, role: "UI/UX 設計組", lead: "UI/UX 設計團隊", action: "把綁卡與支付失敗提示畫得夠清楚，讓用戶不要看不懂去罵客服。", dod: "Figma 全場景確版，通過前端研發與客服雙向簽核。" },
+      { id: 3, role: "前後端研發組", lead: "支付研發架構組", action: "把 API 寫好、清算通道接好、實時鎖匯搞定，API 延遲不超過 0.8 秒。", dod: "API 延遲 ≤ 800ms，單元測試覆蓋率 ≥ 85%，零重大 Bug。" },
+      { id: 4, role: "測試 QA 組", lead: "QA 驗收測試組", action: "把整個交易流程和 3DS 授權測到爛，保證極端狀況無當機。", dod: "全鏈路測試覆蓋率 100%，完成沙盒高並發壓力驗收。" },
+      { id: 5, role: "法務與合規組", lead: "合規風控主管", action: "確認多國金融牌照與 KYC/AML 流程完全符合當地監管法規。", dod: "金融合規審核 100% 過關，零法律與洗錢風險隱患。" },
+      { id: 6, role: "風控算法組", lead: "風控策略專家", action: "設定好高風險卡攔截規則，信用卡拒付率守在 0.15% 以下。", dod: "Chargeback 爭議率 ≤ 0.15%，高危交易攔截率 ≥ 99%。" },
+      { id: 7, role: "財務清算組", lead: "清算財務專家", action: "確認每天自動平帳，手續費算對，清算賬目一毛不差。", dod: "T+1 自動平帳率 100%，對賬流水差異金額為 0。" },
+      { id: 8, role: "客戶服務組", lead: "客服運營主管", action: "背熟新錯誤代碼對照表與 SOP，目標客訴爭議案件下降 20%。", dod: "掌握新版代碼導引，爭議事件升級率降解 ≥ 20%。" }
+    ];
+
     let tasks = loadFromLocalStorage('fiat_card_tasks', defaultTasks);
     let samrRecords = loadFromLocalStorage('fiat_card_samr', defaultSamr);
+    let raciData = loadFromLocalStorage('fiat_card_raci', defaultRaci);
     let isGlobalRiskBreached = false;
 
     window.addEventListener("DOMContentLoaded", () => {
       initPalettePopover();
       initSplitterResizer();
       renderAllViews();
+      loadKickoffCustoms();
+      renderKickoffRaciTable();
     });
 
-    /* 持久化存取工具函式 */
     function saveToLocalStorage() {
       localStorage.setItem('fiat_card_tasks', JSON.stringify(tasks));
       localStorage.setItem('fiat_card_samr', JSON.stringify(samrRecords));
+      localStorage.setItem('fiat_card_raci', JSON.stringify(raciData));
     }
 
     function loadFromLocalStorage(key, fallback) {
@@ -960,11 +945,103 @@
       return fallback;
     }
 
-    /* JSON 一鍵備份與匯入 */
+    /* Kickoff 專屬自訂資料保存與讀取 */
+    function saveKickoffCustoms() {
+      const customs = {
+        c1_t: document.getElementById("ko-c1-t").value,
+        c1_v: document.getElementById("ko-c1-v").value,
+        c1_d: document.getElementById("ko-c1-d").value,
+        c2_t: document.getElementById("ko-c2-t").value,
+        c2_v: document.getElementById("ko-c2-v").value,
+        c2_d: document.getElementById("ko-c2-d").value,
+        c3_t: document.getElementById("ko-c3-t").value,
+        c3_v: document.getElementById("ko-c3-v").value,
+        c3_d: document.getElementById("ko-c3-d").value,
+        sp1_t1: document.getElementById("ko-sp1-t1").value,
+        sp1_t2: document.getElementById("ko-sp1-t2").value,
+        sp1_d: document.getElementById("ko-sp1-d").value,
+        sp2_t1: document.getElementById("ko-sp2-t1").value,
+        sp2_t2: document.getElementById("ko-sp2-t2").value,
+        sp2_d: document.getElementById("ko-sp2-d").value,
+        sp3_t1: document.getElementById("ko-sp3-t1").value,
+        sp3_t2: document.getElementById("ko-sp3-t2").value,
+        sp3_d: document.getElementById("ko-sp3-d").value,
+        sp4_t1: document.getElementById("ko-sp4-t1").value,
+        sp4_t2: document.getElementById("ko-sp4-t2").value,
+        sp4_d: document.getElementById("ko-sp4-d").value
+      };
+      localStorage.setItem('fiat_card_ko_customs', JSON.stringify(customs));
+    }
+
+    function loadKickoffCustoms() {
+      const saved = localStorage.getItem('fiat_card_ko_customs');
+      if (!saved) return;
+      try {
+        const c = JSON.parse(saved);
+        if (c.c1_t) document.getElementById("ko-c1-t").value = c.c1_t;
+        if (c.c1_v) document.getElementById("ko-c1-v").value = c.c1_v;
+        if (c.c1_d) document.getElementById("ko-c1-d").value = c.c1_d;
+        if (c.c2_t) document.getElementById("ko-c2-t").value = c.c2_t;
+        if (c.c2_v) document.getElementById("ko-c2-v").value = c.c2_v;
+        if (c.c2_d) document.getElementById("ko-c2-d").value = c.c2_d;
+        if (c.c3_t) document.getElementById("ko-c3-t").value = c.c3_t;
+        if (c.c3_v) document.getElementById("ko-c3-v").value = c.c3_v;
+        if (c.c3_d) document.getElementById("ko-c3-d").value = c.c3_d;
+        if (c.sp1_t1) document.getElementById("ko-sp1-t1").value = c.sp1_t1;
+        if (c.sp1_t2) document.getElementById("ko-sp1-t2").value = c.sp1_t2;
+        if (c.sp1_d) document.getElementById("ko-sp1-d").value = c.sp1_d;
+        if (c.sp2_t1) document.getElementById("ko-sp2-t1").value = c.sp2_t1;
+        if (c.sp2_t2) document.getElementById("ko-sp2-t2").value = c.sp2_t2;
+        if (c.sp2_d) document.getElementById("ko-sp2-d").value = c.sp2_d;
+        if (c.sp3_t1) document.getElementById("ko-sp3-t1").value = c.sp3_t1;
+        if (c.sp3_t2) document.getElementById("ko-sp3-t2").value = c.sp3_t2;
+        if (c.sp3_d) document.getElementById("ko-sp3-d").value = c.sp3_d;
+        if (c.sp4_t1) document.getElementById("ko-sp4-t1").value = c.sp4_t1;
+        if (c.sp4_t2) document.getElementById("ko-sp4-t2").value = c.sp4_t2;
+        if (c.sp4_d) document.getElementById("ko-sp4-d").value = c.sp4_d;
+      } catch (e) {}
+    }
+
+    function renderKickoffRaciTable() {
+      const tbody = document.getElementById("kickoffRaciBody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      raciData.forEach((row, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" style="font-weight:700;" value="${row.role}" oninput="raciData[${idx}].role=this.value; saveToLocalStorage();"></td>
+          <td><input type="text" value="${row.lead}" oninput="raciData[${idx}].lead=this.value; saveToLocalStorage();"></td>
+          <td><input type="text" value="${row.action}" oninput="raciData[${idx}].action=this.value; saveToLocalStorage();"></td>
+          <td><input type="text" value="${row.dod}" oninput="raciData[${idx}].dod=this.value; saveToLocalStorage();"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function publishWorkEmailNotice() {
+      saveKickoffCustoms();
+      saveToLocalStorage();
+      const subject = "【專案啟動】法幣信用卡產品 4 Sprints 迭代交付基準與分工認領已發布";
+      alert(
+        `📧 [WORK EMAIL 已發布全員]\n` +
+        `主旨：${subject}\n` +
+        `收件人：研發、UI/UX、風控、合規、財務、客服全體成員\n\n` +
+        `核心基準指標：\n` +
+        `1. ${document.getElementById("ko-c1-t").value}: ${document.getElementById("ko-c1-v").value}\n` +
+        `2. ${document.getElementById("ko-c2-t").value}: ${document.getElementById("ko-c2-v").value}\n` +
+        `3. ${document.getElementById("ko-c3-t").value}: ${document.getElementById("ko-c3-v").value}\n\n` +
+        `狀態：已自動同步至專案日誌與 LocalStorage，每日 09:30 敏捷站會驗收推進。`
+      );
+    }
+
     function exportDataBackup() {
+      saveKickoffCustoms();
       const backupData = {
         tasks,
         samrRecords,
+        raciData,
+        koCustoms: JSON.parse(localStorage.getItem('fiat_card_ko_customs') || '{}'),
         exportTime: new Date().toISOString()
       };
       const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
@@ -986,8 +1063,12 @@
           if (parsed.tasks && Array.isArray(parsed.tasks)) {
             tasks = parsed.tasks;
             if (parsed.samrRecords) samrRecords = parsed.samrRecords;
+            if (parsed.raciData) raciData = parsed.raciData;
+            if (parsed.koCustoms) localStorage.setItem('fiat_card_ko_customs', JSON.stringify(parsed.koCustoms));
             saveToLocalStorage();
             renderAllViews();
+            loadKickoffCustoms();
+            renderKickoffRaciTable();
             alert("✅ 專案資料已成功匯入！");
           } else {
             alert("❌ 格式不正確，找不到 tasks 欄位");
@@ -1009,7 +1090,7 @@
       renderSAMRTable();
       renderReportPipeline();
       updatePIP();
-      saveToLocalStorage(); // 每次刷新視圖同步更新本地儲存
+      saveToLocalStorage();
     }
 
     function switchRoadmapSubTab(subTabKey) {
@@ -1021,7 +1102,6 @@
       else renderGantt();
     }
 
-    /* 甘特圖渲染 */
     function renderGantt() {
       const treeContainer = document.getElementById("treeRows");
       const timelineHeader = document.getElementById("timelineHeader");
@@ -1474,7 +1554,6 @@
       }
     }
 
-    /* 三核加權 PIP 計算: 60% 產研 + 30% 風控 + 10% 商務 */
     function updatePIP() {
       const opsTasks = tasks.filter(t => t.type === 'ops');
       const avgOps = opsTasks.reduce((acc, c) => acc + c.progress, 0) / (opsTasks.length || 1);
@@ -1543,17 +1622,7 @@
         colPublish: "PUBLISH (已發版)",
         createIssue: "新增 Issue",
         koTitle: "🚀 法幣信用卡產品 Kickoff 戰略宣誓 (全域對齊)",
-        koSub: "PM 組織核心：不逐字唸 PRD，只鎖死「目標底線、時間節奏、誰做什麼」。",
-        koR1T: "1. 穩定度死命令 (STABILITY)",
-        koR1D: "交易授權成功率守死 98% 以上；優化錯誤代碼引導，客服爭議事件降解 20%。",
-        koR2T: "2. 風控死命令 (RISK CONTROL)",
-        koR2D: "信用卡拒付率 (Chargeback) 嚴守 0.15% 紅線；超過立即觸發 24H 緊急機制阻斷。",
-        koR3T: "3. 合規清算死命令 (COMPLIANCE)",
-        koR3D: "多國 KYC/AML 審查 100% 過關；T+1 對賬自動平帳覆蓋率 100%，對賬差異為 0。",
-        koSp1: "搞定規格。Figma User Flow 確版、API 規格凍結、多國金融法規要求清單列清。",
-        koSp2: "把路打通。工程寫好扣款與錯誤提示、串接清算通道、高危卡段風控規則庫上線。",
-        koSp3: "全速壓測。整合 3DS 授權、全鏈路沙盒壓測、模擬爭議拒付攔截，掃清重大 Bug。",
-        koSp4: "驗收發版。首波放量 10% 灰度測試、Python 控制台監控、客訴降 20% 量化驗收。"
+        koSub: "PM 組織核心：不逐字唸 PRD，只鎖死「核心指標底線、時間節奏、誰做什麼」。所有欄位皆可點擊直接編輯。"
       },
       en: {
         navCore: "PRODUCT WORKSPACES",
@@ -1562,7 +1631,7 @@
         navRisk: "🛡️ 30% Risk & Compliance",
         navBiz: "💼 10% Settlement & Finance",
         navCollab: "CROSS-TEAM DECISIONS",
-        navKickoff: "🚀 Kickoff Meeting Strategy",
+        navKickoff: "🚀 Kickoff Strategy",
         navSamr: "🗣️ Cross-Team SAMR Hub",
         navClient: "OPERATIONS & BRIEFING",
         navReport: "📄 Executive Status Briefing",
@@ -1577,17 +1646,7 @@
         colPublish: "PUBLISH (Released)",
         createIssue: "New Issue",
         koTitle: "🚀 Fiat & Card Product Kickoff Strategy Briefing",
-        koSub: "PM Rule: Don't read the PRD line by line—lock in targets, timelines, and RACI deliverables.",
-        koR1T: "1. STABILITY MANDATE",
-        koR1D: "Auth rate locked ≥ 98%; refine error prompts to slash CS disputes by ≥ 20%.",
-        koR2T: "2. RISK MANDATE",
-        koR2D: "Chargeback rate strictly ≤ 0.15%; breaches immediately fire a 24-hr emergency response.",
-        koR3T: "3. COMPLIANCE MANDATE",
-        koR3D: "KYC/AML 100% compliant; T+1 auto-reconciliation at 100% with zero balance variance.",
-        koSp1: "Specifications. Finalize Figma flows, freeze API contracts, list compliance checklist.",
-        koSp2: "Connectivity. Build checkout UI & error codes, connect settlement rails, deploy BIN rules.",
-        koSp3: "Stress Testing. Integrate 3DS, execute sandbox load tests, simulate chargeback blocks.",
-        koSp4: "Release & Audit. 10% canary release, monitor Python dashboard, verify 20% dispute reduction."
+        koSub: "PM Rule: Lock in core targets, delivery cadence, and RACI deliverables. All fields are editable."
       }
     };
 
@@ -1622,16 +1681,6 @@
 
       document.getElementById("txt-ko-title").textContent = d.koTitle;
       document.getElementById("txt-ko-sub").textContent = d.koSub;
-      document.getElementById("txt-ko-r1-t").textContent = d.koR1T;
-      document.getElementById("txt-ko-r1-d").textContent = d.koR1D;
-      document.getElementById("txt-ko-r2-t").textContent = d.koR2T;
-      document.getElementById("txt-ko-r2-d").textContent = d.koR2D;
-      document.getElementById("txt-ko-r3-t").textContent = d.koR3T;
-      document.getElementById("txt-ko-r3-d").textContent = d.koR3D;
-      document.getElementById("txt-ko-sp1-desc").textContent = d.koSp1;
-      document.getElementById("txt-ko-sp2-desc").textContent = d.koSp2;
-      document.getElementById("txt-ko-sp3-desc").textContent = d.koSp3;
-      document.getElementById("txt-ko-sp4-desc").textContent = d.koSp4;
 
       renderAllViews();
     }
@@ -1645,7 +1694,7 @@
         ops: currentLang==='zh'?"🎯 60% 支付體驗與產研推進":"🎯 60% Payment UX & Dev Pipeline",
         risk: currentLang==='zh'?"🛡️ 30% 風控合規與防護":"🛡️ 30% Risk & Compliance",
         biz: currentLang==='zh'?"💼 10% 清算商務與平帳":"💼 10% Settlement & Finance",
-        kickoff: currentLang==='zh'?"🚀 Kickoff 會議戰略 (三大死命令與 RACI 矩陣)":"🚀 Kickoff Strategy (Mandates & RACI Matrix)",
+        kickoff: currentLang==='zh'?"🚀 Kickoff 會議戰略 (三大基準指標與 RACI 矩陣)":"🚀 Kickoff Strategy (Core Mandates & RACI Matrix)",
         samr: currentLang==='zh'?"🗣️ 跨部門溝通決策台 (SAMR)":"🗣️ Cross-Team SAMR Decision Hub",
         report: currentLang==='zh'?"📄 產品交付營運報告 (Report)":"📄 Executive Product & Operations Briefing"
       };
