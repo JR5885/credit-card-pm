@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiat & Card Payment PM Command Center (60/30/10 Framework)</title>
+  <title>Fiat & Card Payment PM Command Center (with Kickoff Strategy)</title>
   <style>
     :root {
       --jira-blue: #0052cc;
@@ -36,6 +36,7 @@
     .nav-badge-ops { background: #0052cc; }
     .nav-badge-risk { background: #6554c0; }
     .nav-badge-biz { background: #ff8b00; }
+    .nav-badge-kickoff { background: #e5493a; }
 
     /* Main Container */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -164,12 +165,10 @@
     .badge-risk { background: #eae6ff; color: #403294; border: 1px solid #d3cbfb; }
     .badge-biz { background: #fff0b3; color: #825c00; border: 1px solid #ffe380; }
 
-    /* 分割條 */
     .splitter-resizer { width: 6px; cursor: col-resize; background: var(--jira-border); position: relative; flex-shrink: 0; z-index: 30; transition: background 0.15s; }
     .splitter-resizer:hover, .splitter-resizer.resizing { background: var(--jira-blue); }
     .splitter-resizer::after { content: ""; position: absolute; top: 50%; left: 1px; transform: translateY(-50%); width: 4px; height: 24px; border-left: 1px solid rgba(0,0,0,0.3); border-right: 1px solid rgba(0,0,0,0.3); }
 
-    /* Timeline Matrix */
     .gantt-timeline { flex: 1; display: flex; flex-direction: column; overflow-x: auto; position: relative; user-select: none; }
     .timeline-hdr { height: 42px; border-bottom: 1px solid var(--jira-border); display: flex; background: #fafbfc; }
     .week-col { width: var(--cell-w); min-width: var(--cell-w); border-right: 1px dashed var(--jira-border); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--jira-text-muted); }
@@ -184,9 +183,7 @@
     .gantt-bar.bar-breached { background-color: #de350b !important; border: 1px solid #ffbdad; box-shadow: 0 0 6px rgba(222, 53, 11, 0.5); }
     .resizer { position: absolute; right: 0; top: 0; width: 6px; height: 100%; cursor: col-resize; background: rgba(0,0,0,0.2); border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 
-    /* ========================================================
-       Jira 敏捷看板
-       ======================================================== */
+    /* Jira 看板 */
     .jira-board-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; flex: 1; overflow-x: auto; padding: 4px 0 12px 0; }
     .jira-column { background: #f4f5f7; border-radius: 6px; border: 1px solid var(--jira-border); display: flex; flex-direction: column; min-width: 250px; }
     .column-header { padding: 10px 12px; font-size: 12px; font-weight: 700; color: var(--jira-text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid transparent; }
@@ -199,18 +196,7 @@
     .column-cards-body { padding: 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; min-height: 140px; }
     .column-cards-body.dragover { background: #e3fcef; border: 2px dashed #36b37e; border-radius: 4px; }
 
-    .jira-card {
-      background: #fff;
-      border-radius: 5px;
-      border: 1px solid #dfe1e6;
-      box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
-      padding: 10px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: 0.15s;
-    }
+    .jira-card { background: #fff; border-radius: 5px; border: 1px solid #dfe1e6; box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08); padding: 10px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; transition: 0.15s; }
     .jira-card:hover { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(9, 30, 66, 0.15); border-color: #4c9aff; }
     .card-parent-tag { font-size: 10px; color: #5e6c84; font-weight: 600; }
     .card-title { font-size: 12px; font-weight: 600; color: #172b4d; line-height: 1.4; }
@@ -222,7 +208,7 @@
     .btn-add-issue { width: 100%; background: transparent; border: 1px dashed #b3bac5; color: #42526e; font-size: 11px; font-weight: 600; padding: 6px; border-radius: 4px; cursor: pointer; text-align: left; }
     .btn-add-issue:hover { background: #ebecf0; color: #172b4d; }
 
-    /* Modal (含 產研 / 風控 / 商務 三大分類 TAB) */
+    /* Modal */
     .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9, 30, 66, 0.54); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal-backdrop.open { display: flex; }
     .modal-box { background: #fff; width: 500px; border-radius: 6px; box-shadow: 0 8px 24px rgba(9, 30, 66, 0.25); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
@@ -230,7 +216,6 @@
     .modal-header h3 { font-size: 15px; font-weight: 700; }
     .modal-close { cursor: pointer; font-size: 16px; color: var(--jira-text-muted); border: none; background: transparent; }
 
-    /* Modal 分類選項 TAB */
     .modal-type-tabs { display: flex; gap: 6px; background: #ebecf0; border-radius: 6px; padding: 3px; }
     .type-tab-btn { flex: 1; padding: 6px; font-size: 11px; font-weight: 700; border: none; background: transparent; border-radius: 4px; cursor: pointer; color: #42526e; text-align: center; }
     .type-tab-btn.active.tab-ops { background: #0052cc; color: #fff; }
@@ -243,44 +228,30 @@
     .form-group input:focus, .form-group select:focus { border-color: var(--jira-blue); }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 
-    /* Client Report Panel */
-    .report-card-container { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 24px; overflow-y: auto; }
-    .report-subbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--jira-border); padding-bottom: 14px; margin-bottom: 20px; }
-    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-    .kpi-card { border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px; background: #fafbfc; position: relative; overflow: hidden; }
-    .kpi-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
-    .kpi-blue::before { background: #0052cc; }
-    .kpi-green::before { background: #36b37e; }
-    .kpi-purple::before { background: #6554c0; }
-    .kpi-yellow::before { background: #ffab00; }
-    .kpi-title { font-size: 11px; font-weight: 700; color: var(--jira-text-muted); text-transform: uppercase; }
-    .kpi-value { font-size: 26px; font-weight: 800; margin: 6px 0; color: #091e42; }
-    .kpi-hint { font-size: 11px; font-weight: 600; }
-    .chart-dual-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-bottom: 20px; }
-    .chart-box { border: 1px solid var(--jira-border); border-radius: 6px; padding: 16px; background: #fff; }
-    .chart-box h4 { font-size: 13px; font-weight: 700; color: #091e42; margin-bottom: 12px; }
-    .pipe-group { display: flex; flex-direction: column; gap: 12px; }
-    .pipe-row { display: flex; flex-direction: column; gap: 4px; }
-    .pipe-meta { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
-    .pipe-bar-bg { height: 9px; background: #ebecf0; border-radius: 5px; overflow: hidden; }
-    .pipe-bar-fill { height: 100%; border-radius: 5px; }
-    .donut-layout { display: flex; align-items: center; justify-content: space-around; height: 140px; }
-    .donut-svg { width: 110px; height: 110px; transform: rotate(-90deg); }
-    .donut-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 600; }
-    .legend-row { display: flex; align-items: center; gap: 6px; }
-    .dot-chip { width: 9px; height: 9px; border-radius: 2px; }
-    .text-aux-section { border-top: 1px solid var(--jira-border); padding-top: 16px; margin-top: 6px; }
-    .text-aux-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-    .text-aux-card { background: #fafbfc; border-left: 3px solid #0052cc; padding: 10px 12px; font-size: 12px; line-height: 1.5; border-radius: 0 4px 4px 0; }
+    /* ========================================================
+       Kickoff Meeting 專屬精緻樣式
+       ======================================================== */
+    .kickoff-hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+    .kickoff-rule-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px 16px; border-left: 4px solid #0052cc; }
+    .rule-card-title { font-size: 11px; font-weight: 800; color: var(--jira-text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .rule-card-target { font-size: 20px; font-weight: 800; color: #091e42; margin-bottom: 4px; }
+    .rule-card-desc { font-size: 12px; color: #5e6c84; line-height: 1.4; }
+
+    .sprint-flow-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .sprint-flow-card { background: #fafbfc; border: 1px solid var(--jira-border); border-radius: 6px; padding: 12px; }
+    .sprint-flow-card h4 { font-size: 13px; font-weight: 700; color: #0052cc; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .sprint-flow-card p { font-size: 12px; color: #172b4d; line-height: 1.4; }
+
+    .raci-matrix-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; overflow: hidden; }
   </style>
 </head>
 <body>
 
-  <!-- Left Sidebar Navigation (60% 產研 / 30% 風控 / 10% 商務) -->
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand">
       <h2>Fiat & Card Hub</h2>
-      <span style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">60/30/10 Core</span>
+      <span style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">4 Sprints (8W)</span>
     </div>
     <div class="nav-group">
       <div class="nav-label" id="nav-lbl-core">產品核心面板</div>
@@ -299,15 +270,19 @@
         <span id="nav-item-biz">💼 10% 清算商務與平帳</span>
         <span class="nav-badge nav-badge-biz">10%</span>
       </div>
-      <div class="nav-label" id="nav-lbl-collab">跨部門協作決策</div>
+      <div class="nav-label" id="nav-lbl-collab">跨部門協作與戰略</div>
+      <div class="nav-item" onclick="switchNav('kickoff')">
+        <span id="nav-item-kickoff">🚀 Kickoff 會議戰略</span>
+        <span class="nav-badge nav-badge-kickoff" id="nav-badge-kickoff-txt">死命令</span>
+      </div>
       <div class="nav-item" onclick="switchNav('samr')">
         <span id="nav-item-samr">🗣️ 跨部門開會 SAMR</span>
-        <span class="nav-badge nav-badge-ops" style="background:#ffab00; color:#172b4d;">決策連動</span>
+        <span class="nav-badge" style="background:#ffab00; color:#172b4d;">決策連動</span>
       </div>
       <div class="nav-label" id="nav-lbl-client">營運數據與結報</div>
       <div class="nav-item" onclick="switchNav('report')">
         <span id="nav-item-report">📄 產品交付營運報告 (Report)</span>
-        <span class="nav-badge nav-badge-ops" style="background:#36b37e;">80%圖表</span>
+        <span class="nav-badge" style="background:#36b37e;">80%圖表</span>
       </div>
     </div>
   </aside>
@@ -315,7 +290,7 @@
   <!-- Main View Area -->
   <div class="main">
     
-    <!-- 頂部常駐 OKR 看板 (60% 產研 / 30% 風控 / 10% 商務) -->
+    <!-- 頂部常駐 OKR 看板 (60/30/10) -->
     <div class="pinned-okr-bar">
       <div class="okr-header-row">
         <div style="display: flex; align-items: center; gap: 8px;">
@@ -355,14 +330,12 @@
         <h1 id="pageTitle">產品迭代時程 (60/30/10 Roadmap)</h1>
       </div>
       <div class="top-right">
-        <!-- 週寬縮放 -->
         <div style="display: flex; align-items: center; gap: 4px; background: #f4f5f7; border: 1px solid var(--jira-border); border-radius: 4px; padding: 2px 6px;">
           <span style="font-size: 11px; color: var(--jira-text-muted); font-weight: 600;" id="txt-zoom-label">週寬縮放:</span>
           <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(-10)">－</button>
           <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(10)">＋</button>
         </div>
 
-        <!-- 全局語言切換 -->
         <div class="global-lang-tabs">
           <button class="global-lang-btn active" id="btn-global-zh" onclick="setGlobalLanguage('zh')">中文 (ZH)</button>
           <button class="global-lang-btn" id="btn-global-en" onclick="setGlobalLanguage('en')">English (ENG)</button>
@@ -384,15 +357,13 @@
     <!-- Content Viewports -->
     <div class="content-viewport">
       
-      <!-- Panel 1: Roadmap (Gantt with Main/Sub Pipelines aligned to 60/30/10 & 4 Sprints) -->
+      <!-- Panel 1: Roadmap (Gantt with Main/Sub Pipelines & Jira Board) -->
       <div id="view-roadmap" class="panel-view active">
-        
         <div class="panel-tabs">
           <button class="tab-btn active" id="tab-roadmap-gantt" onclick="switchRoadmapSubTab('gantt')">📊 Roadmap (60/30/10 主次甘特圖)</button>
           <button class="tab-btn" id="tab-roadmap-board" onclick="switchRoadmapSubTab('board')">📋 Jira 敏捷看板 (點卡片直接編輯)</button>
         </div>
 
-        <!-- SubTab 1: 4 Sprints 主次甘特圖 -->
         <div id="roadmap-sub-gantt" class="tab-content active" style="flex:1; display:flex;">
           <div id="gantt-margin-alert-bar" style="display:none; background:#ffebe6; border:1px solid #ffbdad; border-radius:4px; padding:8px 14px; margin-bottom:12px; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#bf2600; font-weight:700;">
@@ -415,7 +386,6 @@
           </div>
         </div>
 
-        <!-- SubTab 2: Jira 敏捷看板 -->
         <div id="roadmap-sub-board" class="tab-content" style="flex:1;">
           <div class="panel-action-bar">
             <div>
@@ -472,7 +442,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Panel 2: 60% Product UX & Delivery -->
@@ -566,7 +535,123 @@
         </div>
       </div>
 
-      <!-- Panel 5: SAMR 面板 -->
+      <!-- Panel 5: Kickoff Meeting 專屬戰略看板 (核心新增) -->
+      <div id="view-kickoff" class="panel-view">
+        <div class="panel-action-bar">
+          <div>
+            <h3 style="font-size:14px; font-weight:800; color:#091e42;" id="txt-ko-title">🚀 法幣信用卡產品 Kickoff 戰略宣誓 (全域對齊)</h3>
+            <span style="font-size:12px; color:var(--jira-text-muted);" id="txt-ko-sub">
+              PM 組織核心：不逐字唸 PRD，只鎖死「目標底線、時間節奏、誰做什麼」。
+            </span>
+          </div>
+          <button class="btn" style="background:#e5493a;" onclick="alert('📢 專案死命令已全員廣播！每日 09:30 敏捷站會驗收推進進度。')">📢 宣誓確認</button>
+        </div>
+
+        <!-- 1. 會議三大死命令 (底線指標) -->
+        <div class="kickoff-hero-grid">
+          <div class="kickoff-rule-card" style="border-left-color: #0052cc;">
+            <div class="rule-card-title" id="txt-ko-r1-t">1. 穩定度死命令 (STABILITY)</div>
+            <div class="rule-card-target" style="color: #0052cc;">≥ 98% / -20%</div>
+            <div class="rule-card-desc" id="txt-ko-r1-d">交易授權成功率守死 98% 以上；優化錯誤代碼引導，客服爭議事件降解 20%。</div>
+          </div>
+          <div class="kickoff-rule-card" style="border-left-color: #de350b;">
+            <div class="rule-card-title" id="txt-ko-r2-t">2. 風控死命令 (RISK CONTROL)</div>
+            <div class="rule-card-target" style="color: #de350b;">≤ 0.15%</div>
+            <div class="rule-card-desc" id="txt-ko-r2-d">信用卡拒付率 (Chargeback) 嚴守 0.15% 紅線；超過立即觸發 24H 緊急機制阻斷。</div>
+          </div>
+          <div class="kickoff-rule-card" style="border-left-color: #36b37e;">
+            <div class="rule-card-title" id="txt-ko-r3-t">3. 合規清算死命令 (COMPLIANCE)</div>
+            <div class="rule-card-target" style="color: #36b37e;">100%</div>
+            <div class="rule-card-desc" id="txt-ko-r3-d">多國 KYC/AML 審查 100% 過關；T+1 對賬自動平帳覆蓋率 100%，對賬差異為 0。</div>
+          </div>
+        </div>
+
+        <!-- 2. 4 Sprints 迭代時間節奏 -->
+        <div class="sprint-flow-row">
+          <div class="sprint-flow-card">
+            <h4><span>Sprint 1 (W1-W2)</span><span>定規格</span></h4>
+            <p id="txt-ko-sp1-desc">搞定規格。Figma User Flow 確版、API 規格凍結、多國金融法規要求清單列清。</p>
+          </div>
+          <div class="sprint-flow-card">
+            <h4><span>Sprint 2 (W3-W4)</span><span>打通路</span></h4>
+            <p id="txt-ko-sp2-desc">把路打通。工程寫好扣款與錯誤提示、串接清算通道、高危卡段風控規則庫上線。</p>
+          </div>
+          <div class="sprint-flow-card">
+            <h4><span>Sprint 3 (W5-W6)</span><span>全壓測</span></h4>
+            <p id="txt-ko-sp3-desc">全速壓測。整合 3DS 授權、全鏈路沙盒壓測、模擬爭議拒付攔截，掃清重大 Bug。</p>
+          </div>
+          <div class="sprint-flow-card">
+            <h4><span>Sprint 4 (W7-W8)</span><span>放量收</span></h4>
+            <p id="txt-ko-sp4-desc">驗收發版。首波放量 10% 灰度測試、Python 控制台監控、客訴降 20% 量化驗收。</p>
+          </div>
+        </div>
+
+        <!-- 3. 各團隊分工與點名認領 (RACI 矩陣 - 可直接編輯) -->
+        <div class="raci-matrix-card">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 140px;">團隊 / 角色</th>
+                <th style="width: 160px;">核心負責人</th>
+                <th>會議指派核心職責 (Action Items)</th>
+                <th>交付標準 (Definition of Done)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>產品經理 (PM)</strong></td>
+                <td><input type="text" value="陳虹汝 (Lead)"></td>
+                <td>排優先級、盯緊 4 Sprints 進度、用 Python/SQL 寫出監控儀表板。</td>
+                <td>Sprint 待辦無遺漏，儀表板實時監控成功率與拒付率。</td>
+              </tr>
+              <tr>
+                <td><strong>UI/UX 設計組</strong></td>
+                <td><input type="text" value="UI/UX 設計團隊"></td>
+                <td>把綁卡與支付失敗提示畫得夠清楚，讓用戶不要看不懂去罵客服。</td>
+                <td>Figma 全場景確版，通過前端研發與客服雙向簽核。</td>
+              </tr>
+              <tr>
+                <td><strong>前後端研發組</strong></td>
+                <td><input type="text" value="支付研發架構組"></td>
+                <td>把 API 寫好、清算通道接好、實時鎖匯搞定，API 延遲不超過 0.8 秒。</td>
+                <td>API 延遲 ≤ 800ms，單元測試覆蓋率 ≥ 85%，零重大 Bug。</td>
+              </tr>
+              <tr>
+                <td><strong>測試 QA 組</strong></td>
+                <td><input type="text" value="QA 驗收測試組"></td>
+                <td>把整個交易流程和 3DS 授權測到爛，保證極端狀況無當機。</td>
+                <td>全鏈路測試覆蓋率 100%，完成沙盒高並發壓力驗收。</td>
+              </tr>
+              <tr>
+                <td><strong>法務與合規組</strong></td>
+                <td><input type="text" value="合規風控主管"></td>
+                <td>確認多國金融牌照與 KYC/AML 流程完全符合當地監管法規。</td>
+                <td>金融合規審核 100% 過關，零法律與洗錢風險隱患。</td>
+              </tr>
+              <tr>
+                <td><strong>風控算法組</strong></td>
+                <td><input type="text" value="風控策略專家"></td>
+                <td>設定好高風險卡攔截規則，信用卡拒付率守死在 0.15% 以下。</td>
+                <td>Chargeback 爭議率 ≤ 0.15%，高危交易攔截率 ≥ 99%。</td>
+              </tr>
+              <tr>
+                <td><strong>財務清算組</strong></td>
+                <td><input type="text" value="清算財務專家"></td>
+                <td>確認每天自動平帳，手續費算對，清算賬目一毛不差。</td>
+                <td>T+1 自動平帳率 100%，對賬流水差異金額為 0。</td>
+              </tr>
+              <tr>
+                <td><strong>客戶服務組</strong></td>
+                <td><input type="text" value="客服運營主管"></td>
+                <td>背熟新錯誤代碼對照表與 SOP，目標客訴爭議案件下降 20%。</td>
+                <td>掌握新版代碼導引，爭議事件升級率降解 ≥ 20%。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel 6: SAMR 面板 -->
       <div id="view-samr" class="panel-view">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
           <div>
@@ -592,7 +677,7 @@
         </div>
       </div>
 
-      <!-- Panel 6: 客戶交付結報 (80% 圖表 + 20% 文字) -->
+      <!-- Panel 7: 客戶交付結報 -->
       <div id="view-report" class="panel-view">
         <div class="report-card-container">
           <div class="report-subbar">
@@ -699,7 +784,7 @@
     </div>
   </div>
 
-  <!-- Modal 編輯視窗 (多加一個 TAB: 選項 產研 OR 風控 OR 商務) -->
+  <!-- Modal 編輯視窗 (含 產研 / 風控 / 商務 TAB 切換) -->
   <div class="modal-backdrop" id="editModalBackdrop">
     <div class="modal-box">
       <div class="modal-header">
@@ -707,7 +792,6 @@
         <button class="modal-close" onclick="closeEditModal()">✕</button>
       </div>
 
-      <!-- ★ 核心新增 TAB：產研 OR 風控 OR 商務 一鍵切換 -->
       <div class="modal-type-tabs">
         <button type="button" class="type-tab-btn active tab-ops" id="modal-tab-ops" onclick="selectModalType('ops')">🎯 60% 產研</button>
         <button type="button" class="type-tab-btn tab-risk" id="modal-tab-risk" onclick="selectModalType('risk')">🛡️ 30% 風控</button>
@@ -764,115 +848,36 @@
   <div id="palettePopover" class="palette-popover"></div>
 
   <script>
-    const TOTAL_WEEKS = 8; // 4 Sprints (每個 Sprint 2 週)
+    const TOTAL_WEEKS = 8;
     let currentCellWidth = 105;
     let currentTreeWidth = 580;
     let currentLang = 'zh';
     let editingTaskId = null;
     let draggedTaskId = null;
-    let currentModalType = 'ops'; // 'ops' (60%) | 'risk' (30%) | 'biz' (10%)
+    let currentModalType = 'ops';
 
     const JIRA_COLORS = [
       "#0052cc", "#36b37e", "#6554c0", "#ff8b00",
       "#172b4d", "#e5493a", "#00a3bf", "#403294"
     ];
 
-    // 重新梳理：精準對齊 60% 產研 / 30% 風控 / 10% 商務
     let tasks = [
-      /* =========================================================================
-         🎯 60% 產研敏捷交付 (Objective 1)
-         ========================================================================= */
-      { 
-        id: 100, isMain: true, key: "EPIC-01", 
-        name: "💳 信用卡綁卡流程與失敗引導優化 (UX 爭議降解 20%)", 
-        primary: "產品 PM (陳虹汝)", secondary: "前台產品組", 
-        type: "ops", color: "#0052cc", start: 0, duration: 8.0, progress: 85, 
-        jiraStatus: "dev", criteria: "達成客訴降解 ≥ 20% 與轉換提升" 
-      },
-      { 
-        id: 101, isMain: false, parentId: 100, key: "PAY-101", 
-        name: "[Sprint 1] Figma 交易 User Flow 與 Wireframe 繪製確版", 
-        primary: "UI/UX 設計組", secondary: "產品 PM", 
-        type: "ops", color: "#00a3bf", start: 0, duration: 2.0, progress: 100, 
-        jiraStatus: "publish", criteria: "完成全場景交易流程確版" 
-      },
-      { 
-        id: 102, isMain: false, parentId: 100, key: "PAY-102", 
-        name: "[Sprint 2] Jira Epics/Stories 拆解與失敗代碼提示重構", 
-        primary: "前台研發組", secondary: "產品 PM", 
-        type: "ops", color: "#0052cc", start: 2.0, duration: 2.0, progress: 90, 
-        jiraStatus: "test", criteria: "建立 AC 條件，前端提示邏輯上線" 
-      },
-      { 
-        id: 103, isMain: false, parentId: 100, key: "PAY-103", 
-        name: "[Sprint 3] 3DS 授權逾時模糊提示優化與全鏈路沙盒壓測", 
-        primary: "測試 QA 組", secondary: "客服運營組", 
-        type: "ops", color: "#36b37e", start: 4.0, duration: 2.0, progress: 80, 
-        jiraStatus: "dev", criteria: "通過 3DS 模擬壓力測試" 
-      },
-      { 
-        id: 104, isMain: false, parentId: 100, key: "PAY-104", 
-        name: "[Sprint 4] 正式灰度發版與客服爭議降解 20% 量化驗收", 
-        primary: "Scrum PM", secondary: "客服主管", 
-        type: "ops", color: "#36b37e", start: 6.0, duration: 2.0, progress: 70, 
-        jiraStatus: "dev", criteria: "監控客訴案件下降 ≥ 20%" 
-      },
+      // 60% 產研 (Objective 1)
+      { id: 100, isMain: true, key: "EPIC-01", name: "💳 信用卡綁卡流程與失敗引導優化 (UX 爭議降解 20%)", primary: "產品 PM (陳虹汝)", secondary: "前台產品組", type: "ops", color: "#0052cc", start: 0, duration: 8.0, progress: 85, jiraStatus: "dev" },
+      { id: 101, isMain: false, parentId: 100, key: "PAY-101", name: "[Sprint 1] Figma 交易 User Flow 與 Wireframe 繪製確版", primary: "UI/UX 設計組", secondary: "產品 PM", type: "ops", color: "#00a3bf", start: 0, duration: 2.0, progress: 100, jiraStatus: "publish" },
+      { id: 102, isMain: false, parentId: 100, key: "PAY-102", name: "[Sprint 2] Jira Epics/Stories 拆解與失敗代碼提示重構", primary: "前台研發組", secondary: "產品 PM", type: "ops", color: "#0052cc", start: 2.0, duration: 2.0, progress: 90, jiraStatus: "test" },
+      { id: 103, isMain: false, parentId: 100, key: "PAY-103", name: "[Sprint 3] 3DS 授權逾時模糊提示優化與全鏈路沙盒壓測", primary: "測試 QA 組", secondary: "客服運營組", type: "ops", color: "#36b37e", start: 4.0, duration: 2.0, progress: 80, jiraStatus: "dev" },
+      { id: 104, isMain: false, parentId: 100, key: "PAY-104", name: "[Sprint 4] 正式灰度發版與客服爭議降解 20% 量化驗收", primary: "Scrum PM", secondary: "客服主管", type: "ops", color: "#36b37e", start: 6.0, duration: 2.0, progress: 70, jiraStatus: "dev" },
 
-      /* =========================================================================
-         🛡️ 30% 風控合規與防護 (Objective 2)
-         ========================================================================= */
-      { 
-        id: 200, isMain: true, key: "EPIC-02", 
-        name: "🛡️ 多國 KYC/AML 金融風控監管與拒付率控制 (≤0.15%)", 
-        primary: "法務合規組", secondary: "風控算法組", 
-        type: "risk", color: "#6554c0", start: 0, duration: 8.0, progress: 80, 
-        jiraStatus: "dev", budget: 1500000, cost: 2700, stage: "維護迭代", // 2700/1500000 = 0.18% 觸發 >0.15% 警報
-        criteria: "Chargeback 拒付率嚴守 ≤ 0.15%" 
-      },
-      { 
-        id: 201, isMain: false, parentId: 200, key: "PAY-201", 
-        name: "[Sprint 1-2] 多國金融監管規則庫部署與高危卡段速率限制", 
-        primary: "風控算法組", secondary: "法務合規", 
-        type: "risk", color: "#403294", start: 0, duration: 4.0, progress: 95, 
-        jiraStatus: "publish", budget: 800000, cost: 800, stage: "已上線", 
-        criteria: "精準攔截高風險偽冒卡" 
-      },
-      { 
-        id: 202, isMain: false, parentId: 200, key: "PAY-202", 
-        name: "[Sprint 3-4] Python 營運智慧控制台與 Chargeback 即時阻斷", 
-        primary: "產品 PM (自主開發)", secondary: "數據團隊", 
-        type: "risk", color: "#6554c0", start: 4.0, duration: 4.0, progress: 65, 
-        jiraStatus: "dev", budget: 700000, cost: 1900, stage: "內部測試", 
-        criteria: "即時監控拒付率與客服 SOP 培訓" 
-      },
+      // 30% 風控 (Objective 2)
+      { id: 200, isMain: true, key: "EPIC-02", name: "🛡️ 多國 KYC/AML 金融風控監管與拒付率控制 (≤0.15%)", primary: "法務合規組", secondary: "風控算法組", type: "risk", color: "#6554c0", start: 0, duration: 8.0, progress: 80, jiraStatus: "dev", budget: 1500000, cost: 2700, stage: "維護迭代" },
+      { id: 201, isMain: false, parentId: 200, key: "PAY-201", name: "[Sprint 1-2] 多國金融監管規則庫部署與高危卡段速率限制", primary: "風控算法組", secondary: "法務合規", type: "risk", color: "#403294", start: 0, duration: 4.0, progress: 95, jiraStatus: "publish", budget: 800000, cost: 800, stage: "已上線" },
+      { id: 202, isMain: false, parentId: 200, key: "PAY-202", name: "[Sprint 3-4] Python 營運智慧控制台與 Chargeback 即時阻斷", primary: "產品 PM (自主開發)", secondary: "數據團隊", type: "risk", color: "#6554c0", start: 4.0, duration: 4.0, progress: 65, jiraStatus: "dev", budget: 700000, cost: 1900, stage: "內部測試" },
 
-      /* =========================================================================
-         💼 10% 清算商務與平帳 (Objective 3)
-         ========================================================================= */
-      { 
-        id: 300, isMain: true, key: "EPIC-03", 
-        name: "🌐 跨國法幣清算 (Settlement) 通道商業對接與 T+1 自動平帳", 
-        primary: "支付清算 PM (陳虹汝)", secondary: "財務技術組", 
-        type: "biz", color: "#ff8b00", start: 0, duration: 8.0, progress: 75, 
-        jiraStatus: "dev", budget: 600000, cost: 450, stage: "第二階段 (UAT)", 
-        criteria: "T+1 自動平帳覆蓋率 100%" 
-      },
-      { 
-        id: 301, isMain: false, parentId: 300, key: "PAY-301", 
-        name: "[Sprint 1-2] 跨國法幣清算通道 API 與實時鎖匯商務協議對接", 
-        primary: "通道合作夥伴", secondary: "清算 PM", 
-        type: "biz", color: "#ff8b00", start: 0, duration: 4.0, progress: 90, 
-        jiraStatus: "test", budget: 300000, cost: 200, stage: "聯調驗收", 
-        criteria: "鎖匯精度達毫秒級" 
-      },
-      { 
-        id: 302, isMain: false, parentId: 300, key: "PAY-302", 
-        name: "[Sprint 3-4] 財務對賬流水自動化與 Python 平帳腳本部署", 
-        primary: "後端技術組", secondary: "財務團隊", 
-        type: "biz", color: "#ff8b00", start: 4.0, duration: 4.0, progress: 60, 
-        jiraStatus: "dev", budget: 300000, cost: 250, stage: "開發部署", 
-        criteria: "消除人工對賬誤差" 
-      }
+      // 10% 商務 (Objective 3)
+      { id: 300, isMain: true, key: "EPIC-03", name: "🌐 跨國法幣清算 (Settlement) 通道商業對接與 T+1 自動平帳", primary: "支付清算 PM (陳虹汝)", secondary: "財務技術組", type: "biz", color: "#ff8b00", start: 0, duration: 8.0, progress: 75, jiraStatus: "dev", budget: 600000, cost: 450, stage: "第二階段 (UAT)" },
+      { id: 301, isMain: false, parentId: 300, key: "PAY-301", name: "[Sprint 1-2] 跨國法幣清算通道 API 與實時鎖匯商務協議對接", primary: "通道合作夥伴", secondary: "清算 PM", type: "biz", color: "#ff8b00", start: 0, duration: 4.0, progress: 90, jiraStatus: "test", budget: 300000, cost: 200, stage: "聯調驗收" },
+      { id: 302, isMain: false, parentId: 300, key: "PAY-302", name: "[Sprint 3-4] 財務對賬流水自動化與 Python 平帳腳本部署", primary: "後端技術組", secondary: "財務團隊", type: "biz", color: "#ff8b00", start: 4.0, duration: 4.0, progress: 60, jiraStatus: "dev", budget: 300000, cost: 250, stage: "開發部署" }
     ];
 
     let samrRecords = [
@@ -922,9 +927,6 @@
       else renderGantt();
     }
 
-    /* ========================================================
-       1. 甘特圖渲染 (60% 產研 / 30% 風控 / 10% 商務)
-       ======================================================== */
     function renderGantt() {
       const treeContainer = document.getElementById("treeRows");
       const timelineHeader = document.getElementById("timelineHeader");
@@ -947,7 +949,6 @@
 
       tasks.forEach(task => {
         const isRiskTask = task.type === 'risk';
-        
         let isItemRiskWarning = false;
         let itemCbRate = 0;
         if (isRiskTask && (Number(task.budget) > 0 || Number(task.cost) > 0)) {
@@ -957,7 +958,6 @@
           if (itemCbRate > 0.15) isItemRiskWarning = true;
         }
 
-        // 60/30/10 標籤
         let typeBadge = '';
         if (task.type === 'ops') typeBadge = `<span class="pipeline-badge badge-ops">[60% 產研]</span>`;
         else if (task.type === 'risk') typeBadge = `<span class="pipeline-badge badge-risk">[30% 風控]</span>`;
@@ -974,7 +974,6 @@
         const samr = samrRecords.find(s => s.taskId === task.id);
         const samrBadge = samr ? `<span class="samr-annotation">📌 SAMR</span>` : '';
 
-        // 1. 左側樹狀列表
         const treeRow = document.createElement("div");
         treeRow.className = `tree-row ${task.isMain ? 'row-main' : 'row-sub'}`;
         treeRow.innerHTML = `
@@ -991,7 +990,6 @@
         `;
         treeContainer.appendChild(treeRow);
 
-        // 2. 右側網格行
         const row = document.createElement("div");
         row.className = "timeline-row";
         for (let i = 0; i < TOTAL_WEEKS; i++) {
@@ -1000,7 +998,6 @@
           row.appendChild(grid);
         }
 
-        // 3. 甘特條
         const bar = document.createElement("div");
         bar.className = `gantt-bar ${task.isMain ? 'bar-main' : ''} ${isItemRiskWarning ? 'bar-breached' : ''}`;
         bar.style.backgroundColor = isItemRiskWarning ? '#de350b' : task.color;
@@ -1065,9 +1062,6 @@
       });
     }
 
-    /* ========================================================
-       2. Jira 敏捷看板
-       ======================================================== */
     function renderJiraBoard() {
       const cols = ['backlog', 'dev', 'test', 'publish'];
       const counts = { backlog: 0, dev: 0, test: 0, publish: 0 };
@@ -1152,16 +1146,11 @@
       renderAllViews();
     }
 
-    /* ========================================================
-       3. 輕量點擊編輯彈窗 (含 產研 / 風控 / 商務 TAB 切換)
-       ======================================================== */
     function selectModalType(type) {
       currentModalType = type;
       document.getElementById("modal-tab-ops").classList.toggle("active", type === 'ops');
       document.getElementById("modal-tab-risk").classList.toggle("active", type === 'risk');
       document.getElementById("modal-tab-biz").classList.toggle("active", type === 'biz');
-      
-      // 動態更新可選擇的主要 Pipeline
       populateParentSelect();
     }
 
@@ -1208,7 +1197,6 @@
     function populateParentSelect(selectedId) {
       const select = document.getElementById("modalParentId");
       select.innerHTML = "";
-      // 根據當前選擇的分類過濾出對應的主 Pipeline
       const mains = tasks.filter(t => t.isMain && t.type === currentModalType);
       mains.forEach(m => {
         const opt = document.createElement("option");
@@ -1244,7 +1232,6 @@
       const progress = Number(document.getElementById("modalProgress").value) || 0;
       const parentId = isMain ? null : Number(document.getElementById("modalParentId").value);
 
-      // 色彩映射
       let defaultColor = "#0052cc";
       if (currentModalType === 'risk') defaultColor = "#6554c0";
       else if (currentModalType === 'biz') defaultColor = "#ff8b00";
@@ -1285,7 +1272,6 @@
       renderAllViews();
     }
 
-    /* 4. 60% 產研 / 30% 風控 / 10% 商務 表格渲染 */
     function renderOpsTable() {
       const tbody = document.getElementById("opsTableBody");
       tbody.innerHTML = "";
@@ -1406,9 +1392,6 @@
 
       document.getElementById("pipValue").textContent = `${weighted}%`;
       document.getElementById("pipSub").textContent = `60% 產研: ${Math.round(avgOps)}% | 30% 風控: ${Math.round(avgRisk)}% | 10% 商務: ${Math.round(avgBiz)}%`;
-      
-      const repPip = document.getElementById("rep-kpi-1-v");
-      if (repPip) repPip.textContent = `${weighted}%`;
     }
 
     function initSplitterResizer() {
@@ -1440,18 +1423,148 @@
       renderGantt();
     }
 
+    const globalDict = {
+      zh: {
+        navCore: "產品核心面板",
+        navRoadmap: "📊 產品迭代時程 (Roadmap)",
+        navOps: "🎯 60% 支付體驗與產研",
+        navRisk: "🛡️ 30% 風控合規與防護",
+        navBiz: "💼 10% 清算商務與平帳",
+        navCollab: "跨部門協作與戰略",
+        navKickoff: "🚀 Kickoff 會議戰略",
+        navSamr: "🗣️ 跨部門開會 SAMR",
+        navClient: "營運數據與結報",
+        navReport: "📄 產品交付營運報告 (Report)",
+        pageTitleRoadmap: "產品迭代時程 (60/30/10 Roadmap)",
+        tabGantt: "📊 Roadmap (60/30/10 主次甘特圖)",
+        tabBoard: "📋 Jira 敏捷看板 (點卡片直接編輯)",
+        boardTipTitle: "⚡ Jira 敏捷看板 (對齊 60/30/10 迭代流轉)",
+        boardTipSub: "支援點擊卡片直接彈出 Modal 編輯名稱、責任人與狀態；按住卡片可自由拖曳流轉，實時同步甘特圖與 OKR 指標。",
+        colBacklog: "BACKLOG (待辦)",
+        colDev: "DEV (研發中)",
+        colTest: "TEST (測試/驗收)",
+        colPublish: "PUBLISH (已發版)",
+        createIssue: "新增 Issue",
+        koTitle: "🚀 法幣信用卡產品 Kickoff 戰略宣誓 (全域對齊)",
+        koSub: "PM 組織核心：不逐字唸 PRD，只鎖死「目標底線、時間節奏、誰做什麼」。",
+        koR1T: "1. 穩定度死命令 (STABILITY)",
+        koR1D: "交易授權成功率守死 98% 以上；優化錯誤代碼引導，客服爭議事件降解 20%。",
+        koR2T: "2. 風控死命令 (RISK CONTROL)",
+        koR2D: "信用卡拒付率 (Chargeback) 嚴守 0.15% 紅線；超過立即觸發 24H 緊急機制阻斷。",
+        koR3T: "3. 合規清算死命令 (COMPLIANCE)",
+        koR3D: "多國 KYC/AML 審查 100% 過關；T+1 對賬自動平帳覆蓋率 100%，對賬差異為 0。",
+        koSp1: "搞定規格。Figma User Flow 確版、API 規格凍結、多國金融法規要求清單列清。",
+        koSp2: "把路打通。工程寫好扣款與錯誤提示、串接清算通道、高危卡段風控規則庫上線。",
+        koSp3: "全速壓測。整合 3DS 授權、全鏈路沙盒壓測、模擬爭議拒付攔截，掃清重大 Bug。",
+        koSp4: "驗收發版。首波放量 10% 灰度測試、Python 控制台監控、客訴降 20% 量化驗收。"
+      },
+      en: {
+        navCore: "PRODUCT WORKSPACES",
+        navRoadmap: "📊 Product Roadmap (Gantt)",
+        navOps: "🎯 60% Payment UX & Dev",
+        navRisk: "🛡️ 30% Risk & Compliance",
+        navBiz: "💼 10% Settlement & Finance",
+        navCollab: "CROSS-TEAM DECISIONS",
+        navKickoff: "🚀 Kickoff Meeting Strategy",
+        navSamr: "🗣️ Cross-Team SAMR Hub",
+        navClient: "OPERATIONS & BRIEFING",
+        navReport: "📄 Executive Status Briefing",
+        pageTitleRoadmap: "Fiat & Card Roadmap (60/30/10 Framework)",
+        tabGantt: "📊 Roadmap (60/30/10 Main/Sub Gantt)",
+        tabBoard: "📋 Jira Agile Board (Click Card to Edit)",
+        boardTipTitle: "⚡ Jira Agile Board (Aligned with 60/30/10)",
+        boardTipSub: "Click any card to edit details directly in a modal, or drag & drop across status columns to sync with the Gantt Roadmap.",
+        colBacklog: "BACKLOG",
+        colDev: "DEV (In Dev)",
+        colTest: "TEST (QA / Verification)",
+        colPublish: "PUBLISH (Released)",
+        createIssue: "New Issue",
+        koTitle: "🚀 Fiat & Card Product Kickoff Strategy Briefing",
+        koSub: "PM Rule: Don't read the PRD line by line—lock in targets, timelines, and RACI deliverables.",
+        koR1T: "1. STABILITY MANDATE",
+        koR1D: "Auth rate locked ≥ 98%; refine error prompts to slash CS disputes by ≥ 20%.",
+        koR2T: "2. RISK MANDATE",
+        koR2D: "Chargeback rate strictly ≤ 0.15%; breaches immediately fire a 24-hr emergency response.",
+        koR3T: "3. COMPLIANCE MANDATE",
+        koR3D: "KYC/AML 100% compliant; T+1 auto-reconciliation at 100% with zero balance variance.",
+        koSp1: "Specifications. Finalize Figma flows, freeze API contracts, list compliance checklist.",
+        koSp2: "Connectivity. Build checkout UI & error codes, connect settlement rails, deploy BIN rules.",
+        koSp3: "Stress Testing. Integrate 3DS, execute sandbox load tests, simulate chargeback blocks.",
+        koSp4: "Release & Audit. 10% canary release, monitor Python dashboard, verify 20% dispute reduction."
+      }
+    };
+
     function setGlobalLanguage(lang) {
       currentLang = lang;
+      const d = globalDict[lang];
+
       document.getElementById("btn-global-zh").classList.toggle("active", lang === 'zh');
       document.getElementById("btn-global-en").classList.toggle("active", lang === 'en');
+
+      document.getElementById("nav-lbl-core").textContent = d.navCore;
+      document.getElementById("nav-item-roadmap").textContent = d.navRoadmap;
+      document.getElementById("nav-item-ops").textContent = d.navOps;
+      document.getElementById("nav-item-risk").textContent = d.navRisk;
+      document.getElementById("nav-item-biz").textContent = d.navBiz;
+      document.getElementById("nav-lbl-collab").textContent = d.navCollab;
+      document.getElementById("nav-item-kickoff").textContent = d.navKickoff;
+      document.getElementById("nav-item-samr").textContent = d.navSamr;
+      document.getElementById("nav-lbl-client").textContent = d.navClient;
+      document.getElementById("nav-item-report").textContent = d.navReport;
+
+      document.getElementById("pageTitle").textContent = d.pageTitleRoadmap;
+      document.getElementById("tab-roadmap-gantt").textContent = d.tabGantt;
+      document.getElementById("tab-roadmap-board").textContent = d.tabBoard;
+      document.getElementById("txt-board-tip-title").textContent = d.boardTipTitle;
+      document.getElementById("txt-board-tip-sub").textContent = d.boardTipSub;
+      document.getElementById("lbl-col-backlog").textContent = d.colBacklog;
+      document.getElementById("lbl-col-dev").textContent = d.colDev;
+      document.getElementById("lbl-col-test").textContent = d.colTest;
+      document.getElementById("lbl-col-publish").textContent = d.colPublish;
+      document.querySelectorAll(".txt-create-issue").forEach(el => el.textContent = d.createIssue);
+
+      // Kickoff 面板翻譯
+      document.getElementById("txt-ko-title").textContent = d.koTitle;
+      document.getElementById("txt-ko-sub").textContent = d.koSub;
+      document.getElementById("txt-ko-r1-t").textContent = d.koR1T;
+      document.getElementById("txt-ko-r1-d").textContent = d.koR1D;
+      document.getElementById("txt-ko-r2-t").textContent = d.koR2T;
+      document.getElementById("txt-ko-r2-d").textContent = d.koR2D;
+      document.getElementById("txt-ko-r3-t").textContent = d.koR3T;
+      document.getElementById("txt-ko-r3-d").textContent = d.koR3D;
+      document.getElementById("txt-ko-sp1-desc").textContent = d.koSp1;
+      document.getElementById("txt-ko-sp2-desc").textContent = d.koSp2;
+      document.getElementById("txt-ko-sp3-desc").textContent = d.koSp3;
+      document.getElementById("txt-ko-sp4-desc").textContent = d.koSp4;
+
       renderAllViews();
     }
 
     function switchNav(navKey) {
       document.querySelectorAll(".panel-view").forEach(el => el.classList.remove("active"));
       document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+
+      const titles = {
+        roadmap: currentLang==='zh'?"產品迭代時程 (60/30/10 Roadmap)":"Fiat & Card Roadmap (60/30/10 Framework)",
+        ops: currentLang==='zh'?"🎯 60% 支付體驗與產研推進":"🎯 60% Payment UX & Dev Pipeline",
+        risk: currentLang==='zh'?"🛡️ 30% 風控合規與防護":"🛡️ 30% Risk & Compliance",
+        biz: currentLang==='zh'?"💼 10% 清算商務與平帳":"💼 10% Settlement & Finance",
+        kickoff: currentLang==='zh'?"🚀 Kickoff 會議戰略 (三大死命令與 RACI 矩陣)":"🚀 Kickoff Strategy (Mandates & RACI Matrix)",
+        samr: currentLang==='zh'?"🗣️ 跨部門溝通決策台 (SAMR)":"🗣️ Cross-Team SAMR Decision Hub",
+        report: currentLang==='zh'?"📄 產品交付營運報告 (Report)":"📄 Executive Product & Operations Briefing"
+      };
+
       document.getElementById(`view-${navKey}`).classList.add("active");
+      document.getElementById("pageTitle").textContent = titles[navKey];
       event.currentTarget.classList.add("active");
+    }
+
+    function switchSubTab(parentKey, tabKey) {
+      const parent = document.getElementById(`view-${parentKey}`);
+      parent.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      parent.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+      document.getElementById(`${parentKey}-sub-${tabKey}`).classList.add("active");
     }
 
     function initPalettePopover() {
