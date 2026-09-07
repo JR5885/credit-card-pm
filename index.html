@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiat & Card Payment PM Command Center (with Kickoff Strategy)</title>
+  <title>Fiat & Card Payment PM Command Center (60/30/10 Framework)</title>
   <style>
     :root {
       --jira-blue: #0052cc;
@@ -228,9 +228,7 @@
     .form-group input:focus, .form-group select:focus { border-color: var(--jira-blue); }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 
-    /* ========================================================
-       Kickoff Meeting 專屬精緻樣式
-       ======================================================== */
+    /* Kickoff Meeting 樣式 */
     .kickoff-hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
     .kickoff-rule-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px 16px; border-left: 4px solid #0052cc; }
     .rule-card-title { font-size: 11px; font-weight: 800; color: var(--jira-text-muted); text-transform: uppercase; margin-bottom: 6px; }
@@ -243,6 +241,36 @@
     .sprint-flow-card p { font-size: 12px; color: #172b4d; line-height: 1.4; }
 
     .raci-matrix-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; overflow: hidden; }
+
+    /* Client Report Panel */
+    .report-card-container { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 24px; overflow-y: auto; }
+    .report-subbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--jira-border); padding-bottom: 14px; margin-bottom: 20px; }
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .kpi-card { border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px; background: #fafbfc; position: relative; overflow: hidden; }
+    .kpi-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .kpi-blue::before { background: #0052cc; }
+    .kpi-green::before { background: #36b37e; }
+    .kpi-purple::before { background: #6554c0; }
+    .kpi-yellow::before { background: #ffab00; }
+    .kpi-title { font-size: 11px; font-weight: 700; color: var(--jira-text-muted); text-transform: uppercase; }
+    .kpi-value { font-size: 26px; font-weight: 800; margin: 6px 0; color: #091e42; }
+    .kpi-hint { font-size: 11px; font-weight: 600; }
+    .chart-dual-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-bottom: 20px; }
+    .chart-box { border: 1px solid var(--jira-border); border-radius: 6px; padding: 16px; background: #fff; }
+    .chart-box h4 { font-size: 13px; font-weight: 700; color: #091e42; margin-bottom: 12px; }
+    .pipe-group { display: flex; flex-direction: column; gap: 12px; }
+    .pipe-row { display: flex; flex-direction: column; gap: 4px; }
+    .pipe-meta { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
+    .pipe-bar-bg { height: 9px; background: #ebecf0; border-radius: 5px; overflow: hidden; }
+    .pipe-bar-fill { height: 100%; border-radius: 5px; }
+    .donut-layout { display: flex; align-items: center; justify-content: space-around; height: 140px; }
+    .donut-svg { width: 110px; height: 110px; transform: rotate(-90deg); }
+    .donut-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 600; }
+    .legend-row { display: flex; align-items: center; gap: 6px; }
+    .dot-chip { width: 9px; height: 9px; border-radius: 2px; }
+    .text-aux-section { border-top: 1px solid var(--jira-border); padding-top: 16px; margin-top: 6px; }
+    .text-aux-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .text-aux-card { background: #fafbfc; border-left: 3px solid #0052cc; padding: 10px 12px; font-size: 12px; line-height: 1.5; border-radius: 0 4px 4px 0; }
   </style>
 </head>
 <body>
@@ -324,18 +352,25 @@
       </div>
     </div>
 
-    <!-- Top Action Bar -->
+    <!-- Top Action Bar (含持久化備份 / 匯入 / 縮放 / 語言切換) -->
     <header class="top-bar">
       <div class="top-left">
         <h1 id="pageTitle">產品迭代時程 (60/30/10 Roadmap)</h1>
       </div>
       <div class="top-right">
+        <!-- 備份與還原按鈕 -->
+        <button class="btn" style="background:#42526e;" onclick="exportDataBackup()" title="匯出當前專案資料為 JSON 檔案">💾 備份</button>
+        <button class="btn" style="background:#42526e;" onclick="document.getElementById('importFileInput').click()" title="從 JSON 檔案還原專案資料">📥 匯入</button>
+        <input type="file" id="importFileInput" style="display:none;" accept=".json" onchange="importDataBackup(event)">
+
+        <!-- 週寬縮放 -->
         <div style="display: flex; align-items: center; gap: 4px; background: #f4f5f7; border: 1px solid var(--jira-border); border-radius: 4px; padding: 2px 6px;">
           <span style="font-size: 11px; color: var(--jira-text-muted); font-weight: 600;" id="txt-zoom-label">週寬縮放:</span>
           <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(-10)">－</button>
           <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(10)">＋</button>
         </div>
 
+        <!-- 全局語言切換 -->
         <div class="global-lang-tabs">
           <button class="global-lang-btn active" id="btn-global-zh" onclick="setGlobalLanguage('zh')">中文 (ZH)</button>
           <button class="global-lang-btn" id="btn-global-en" onclick="setGlobalLanguage('en')">English (ENG)</button>
@@ -535,7 +570,7 @@
         </div>
       </div>
 
-      <!-- Panel 5: Kickoff Meeting 專屬戰略看板 (核心新增) -->
+      <!-- Panel 5: Kickoff Meeting 專屬戰略看板 -->
       <div id="view-kickoff" class="panel-view">
         <div class="panel-action-bar">
           <div>
@@ -861,7 +896,8 @@
       "#172b4d", "#e5493a", "#00a3bf", "#403294"
     ];
 
-    let tasks = [
+    // 預設核心資料庫 (60% 產研 / 30% 風控 / 10% 商務)
+    const defaultTasks = [
       // 60% 產研 (Objective 1)
       { id: 100, isMain: true, key: "EPIC-01", name: "💳 信用卡綁卡流程與失敗引導優化 (UX 爭議降解 20%)", primary: "產品 PM (陳虹汝)", secondary: "前台產品組", type: "ops", color: "#0052cc", start: 0, duration: 8.0, progress: 85, jiraStatus: "dev" },
       { id: 101, isMain: false, parentId: 100, key: "PAY-101", name: "[Sprint 1] Figma 交易 User Flow 與 Wireframe 繪製確版", primary: "UI/UX 設計組", secondary: "產品 PM", type: "ops", color: "#00a3bf", start: 0, duration: 2.0, progress: 100, jiraStatus: "publish" },
@@ -880,7 +916,7 @@
       { id: 302, isMain: false, parentId: 300, key: "PAY-302", name: "[Sprint 3-4] 財務對賬流水自動化與 Python 平帳腳本部署", primary: "後端技術組", secondary: "財務團隊", type: "biz", color: "#ff8b00", start: 4.0, duration: 4.0, progress: 60, jiraStatus: "dev", budget: 300000, cost: 250, stage: "開發部署" }
     ];
 
-    let samrRecords = [
+    const defaultSamr = [
       {
         id: 1,
         taskId: 102,
@@ -899,6 +935,9 @@
       }
     ];
 
+    // LocalStorage 持久化初始化
+    let tasks = loadFromLocalStorage('fiat_card_tasks', defaultTasks);
+    let samrRecords = loadFromLocalStorage('fiat_card_samr', defaultSamr);
     let isGlobalRiskBreached = false;
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -906,6 +945,60 @@
       initSplitterResizer();
       renderAllViews();
     });
+
+    /* 持久化存取工具函式 */
+    function saveToLocalStorage() {
+      localStorage.setItem('fiat_card_tasks', JSON.stringify(tasks));
+      localStorage.setItem('fiat_card_samr', JSON.stringify(samrRecords));
+    }
+
+    function loadFromLocalStorage(key, fallback) {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { return fallback; }
+      }
+      return fallback;
+    }
+
+    /* JSON 一鍵備份與匯入 */
+    function exportDataBackup() {
+      const backupData = {
+        tasks,
+        samrRecords,
+        exportTime: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `PM_Command_Backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importDataBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.tasks && Array.isArray(parsed.tasks)) {
+            tasks = parsed.tasks;
+            if (parsed.samrRecords) samrRecords = parsed.samrRecords;
+            saveToLocalStorage();
+            renderAllViews();
+            alert("✅ 專案資料已成功匯入！");
+          } else {
+            alert("❌ 格式不正確，找不到 tasks 欄位");
+          }
+        } catch (err) {
+          alert("❌ 檔案解析失敗，請確認是否為合法的 JSON 檔案");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
 
     function renderAllViews() {
       renderOpsTable();
@@ -916,6 +1009,7 @@
       renderSAMRTable();
       renderReportPipeline();
       updatePIP();
+      saveToLocalStorage(); // 每次刷新視圖同步更新本地儲存
     }
 
     function switchRoadmapSubTab(subTabKey) {
@@ -927,6 +1021,7 @@
       else renderGantt();
     }
 
+    /* 甘特圖渲染 */
     function renderGantt() {
       const treeContainer = document.getElementById("treeRows");
       const timelineHeader = document.getElementById("timelineHeader");
@@ -1034,6 +1129,7 @@
         function onUp() {
           window.removeEventListener("mousemove", onMove);
           window.removeEventListener("mouseup", onUp);
+          saveToLocalStorage();
         }
         window.addEventListener("mousemove", onMove);
         window.addEventListener("mouseup", onUp);
@@ -1056,6 +1152,7 @@
         function onUp() {
           window.removeEventListener("mousemove", onMove);
           window.removeEventListener("mouseup", onUp);
+          saveToLocalStorage();
         }
         window.addEventListener("mousemove", onMove);
         window.addEventListener("mouseup", onUp);
@@ -1279,10 +1376,10 @@
       opsTasks.forEach(op => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><input type="text" value="${op.name}" oninput="op.name=this.value; renderGantt(); renderJiraBoard();"></td>
-          <td><input type="text" value="${op.primary}" oninput="op.primary=this.value; renderGantt(); renderJiraBoard();"></td>
-          <td><input type="text" value="${op.secondary||''}" oninput="op.secondary=this.value;"></td>
-          <td><input type="text" value="${op.criteria || ''}" onchange="op.criteria=this.value;"></td>
+          <td><input type="text" value="${op.name}" oninput="op.name=this.value; renderGantt(); renderJiraBoard(); saveToLocalStorage();"></td>
+          <td><input type="text" value="${op.primary}" oninput="op.primary=this.value; renderGantt(); renderJiraBoard(); saveToLocalStorage();"></td>
+          <td><input type="text" value="${op.secondary||''}" oninput="op.secondary=this.value; saveToLocalStorage();"></td>
+          <td><input type="text" value="${op.criteria || ''}" onchange="op.criteria=this.value; saveToLocalStorage();"></td>
           <td>
             <select onchange="updateOpsStatus(${op.id}, this.value)">
               <option ${op.jiraStatus === 'backlog' ? 'selected' : ''}>Backlog</option>
@@ -1291,7 +1388,7 @@
               <option ${op.jiraStatus === 'publish' ? 'selected' : ''}>Publish</option>
             </select>
           </td>
-          <td><input type="number" value="${op.progress}" min="0" max="100" style="width:60px;" oninput="op.progress=Number(this.value); renderGantt(); renderJiraBoard(); updatePIP();"> %</td>
+          <td><input type="number" value="${op.progress}" min="0" max="100" style="width:60px;" oninput="op.progress=Number(this.value); renderGantt(); renderJiraBoard(); updatePIP(); saveToLocalStorage();"> %</td>
           <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="deleteTaskDirect(${op.id})">刪除</button></td>
         `;
         tbody.appendChild(tr);
@@ -1310,18 +1407,18 @@
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><input type="text" value="${r.name}" oninput="r.name=this.value; renderGantt(); renderJiraBoard();"></td>
-          <td><input type="text" value="${r.primary}" oninput="r.primary=this.value; renderGantt();"></td>
+          <td><input type="text" value="${r.name}" oninput="r.name=this.value; renderGantt(); renderJiraBoard(); saveToLocalStorage();"></td>
+          <td><input type="text" value="${r.primary}" oninput="r.primary=this.value; renderGantt(); saveToLocalStorage();"></td>
           <td><input type="text" value="${r.secondary||''}"></td>
-          <td><input type="number" value="${r.budget || 0}" oninput="r.budget=Number(this.value); renderRiskTable(); renderGantt();"></td>
-          <td><input type="number" value="${r.cost || 0}" oninput="r.cost=Number(this.value); renderRiskTable(); renderGantt();"></td>
+          <td><input type="number" value="${r.budget || 0}" oninput="r.budget=Number(this.value); renderRiskTable(); renderGantt(); saveToLocalStorage();"></td>
+          <td><input type="number" value="${r.cost || 0}" oninput="r.cost=Number(this.value); renderRiskTable(); renderGantt(); saveToLocalStorage();"></td>
           <td style="font-weight:700;">$${netProfit.toLocaleString()}</td>
           <td>
             <span class="status-badge ${cbRate > 0.15 ? 'badge-danger' : 'badge-safe'}">
               ${cbRate > 0.15 ? '🚨 拒付率超標' : '🟢 安全'} (${cbRate.toFixed(2)}%)
             </span>
           </td>
-          <td><input type="text" value="${r.stage||'合規維護'}" onchange="r.stage=this.value;"></td>
+          <td><input type="text" value="${r.stage||'合規維護'}" onchange="r.stage=this.value; saveToLocalStorage();"></td>
           <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="deleteTaskDirect(${r.id})">刪除</button></td>
         `;
         tbody.appendChild(tr);
@@ -1339,14 +1436,14 @@
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><input type="text" value="${b.name}" oninput="b.name=this.value; renderGantt(); renderJiraBoard();"></td>
-          <td><input type="text" value="${b.primary}" oninput="b.primary=this.value; renderGantt();"></td>
+          <td><input type="text" value="${b.name}" oninput="b.name=this.value; renderGantt(); renderJiraBoard(); saveToLocalStorage();"></td>
+          <td><input type="text" value="${b.primary}" oninput="b.primary=this.value; renderGantt(); saveToLocalStorage();"></td>
           <td><input type="text" value="${b.secondary||''}"></td>
-          <td><input type="number" value="${b.budget || 0}" oninput="b.budget=Number(this.value); renderBizTable();"></td>
-          <td><input type="number" value="${b.cost || 0}" oninput="b.cost=Number(this.value); renderBizTable();"></td>
+          <td><input type="number" value="${b.budget || 0}" oninput="b.budget=Number(this.value); renderBizTable(); saveToLocalStorage();"></td>
+          <td><input type="number" value="${b.cost || 0}" oninput="b.cost=Number(this.value); renderBizTable(); saveToLocalStorage();"></td>
           <td style="font-weight:700;">$${netProfit.toLocaleString()}</td>
           <td><span class="status-badge badge-safe">🟢 平帳率 100%</span></td>
-          <td><input type="text" value="${b.stage||'UAT清算'}" onchange="b.stage=this.value;"></td>
+          <td><input type="text" value="${b.stage||'UAT清算'}" onchange="b.stage=this.value; saveToLocalStorage();"></td>
           <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="deleteTaskDirect(${b.id})">刪除</button></td>
         `;
         tbody.appendChild(tr);
@@ -1523,7 +1620,6 @@
       document.getElementById("lbl-col-publish").textContent = d.colPublish;
       document.querySelectorAll(".txt-create-issue").forEach(el => el.textContent = d.createIssue);
 
-      // Kickoff 面板翻譯
       document.getElementById("txt-ko-title").textContent = d.koTitle;
       document.getElementById("txt-ko-sub").textContent = d.koSub;
       document.getElementById("txt-ko-r1-t").textContent = d.koR1T;
@@ -1576,7 +1672,7 @@
         dot.onclick = () => {
           if (currentActiveColorTaskId) {
             const t = tasks.find(x => x.id === currentActiveColorTaskId);
-            if (t) { t.color = color; renderGantt(); }
+            if (t) { t.color = color; renderGantt(); saveToLocalStorage(); }
           }
           pop.style.display = "none";
         };
@@ -1606,12 +1702,12 @@
           optionsHtml += `<option value="${t.id}" ${t.id === record.taskId ? 'selected' : ''}>${t.name}</option>`;
         });
         tr.innerHTML = `
-          <td><select onchange="record.taskId=Number(this.value); renderGantt();">${optionsHtml}</select></td>
-          <td><input type="text" value="${record.departments}" onchange="record.departments=this.value;"></td>
-          <td><textarea onchange="record.summary=this.value;">${record.summary}</textarea></td>
-          <td><textarea onchange="record.action=this.value;">${record.action}</textarea></td>
-          <td><textarea onchange="record.result=this.value;">${record.result}</textarea></td>
-          <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="samrRecords=samrRecords.filter(r=>r.id!==${record.id}); renderSAMRTable(); renderGantt();">刪除</button></td>
+          <td><select onchange="record.taskId=Number(this.value); renderGantt(); saveToLocalStorage();">${optionsHtml}</select></td>
+          <td><input type="text" value="${record.departments}" onchange="record.departments=this.value; saveToLocalStorage();"></td>
+          <td><textarea onchange="record.summary=this.value; saveToLocalStorage();">${record.summary}</textarea></td>
+          <td><textarea onchange="record.action=this.value; saveToLocalStorage();">${record.action}</textarea></td>
+          <td><textarea onchange="record.result=this.value; saveToLocalStorage();">${record.result}</textarea></td>
+          <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="samrRecords=samrRecords.filter(r=>r.id!==${record.id}); renderSAMRTable(); renderGantt(); saveToLocalStorage();">刪除</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1628,6 +1724,7 @@
       });
       renderSAMRTable();
       renderGantt();
+      saveToLocalStorage();
     }
 
     function renderReportPipeline() {
