@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiat & Card Payment PM Command Center (with Save TAB)</title>
+  <title>Fiat & Card Payment PM Command Center (Fixed SAMR Sync)</title>
   <style>
     :root {
       --jira-blue: #0052cc;
@@ -398,7 +398,7 @@
     <!-- Content Viewports -->
     <div class="content-viewport">
       
-      <!-- Panel 1: Roadmap (Gantt with Team Tags on Bars) -->
+      <!-- Panel 1: Roadmap -->
       <div id="view-roadmap" class="panel-view active">
         <div class="panel-tabs">
           <button class="tab-btn active" id="tab-roadmap-gantt" onclick="switchRoadmapSubTab('gantt')">📊 Roadmap (主責團隊標明甘特圖)</button>
@@ -660,7 +660,7 @@
         </div>
       </div>
 
-      <!-- Panel 6: SAMR 面板 -->
+      <!-- Panel 6: SAMR 面板 (修正資料遺失 Bug) -->
       <div id="view-samr" class="panel-view">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
           <div>
@@ -931,7 +931,7 @@
         id: 1,
         taskId: 103,
         departments: "前台產品 × 終端客服 × 風控工程",
-        summary: "用戶於 3DS 授權逾時回傳模糊錯誤碼，引發客服進線激增 35%。",
+        summary: "用戶於 3DS 授權逾時回傳模糊錯誤碼，引發客服進線激進 35%。",
         action: "前台於 48 小時內部署即時指引彈窗，並整合風控白名單重試邏輯。",
         result: "客訴爭議案件自次週起顯著下降 22.4%，達到預期目標。"
       },
@@ -999,19 +999,6 @@
       if (tEl) tEl.textContent = `${tasks.length} 筆`;
       if (sEl) sEl.textContent = `${samrRecords.length} 筆`;
       if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
-    }
-
-    function clearLocalStorageCache() {
-      if (confirm("⚠️ 確定要清除所有本地快取並重置為預設資料嗎？")) {
-        localStorage.clear();
-        tasks = JSON.parse(JSON.stringify(defaultTasks));
-        samrRecords = JSON.parse(JSON.stringify(defaultSamr));
-        raciData = JSON.parse(JSON.stringify(defaultRaci));
-        renderAllViews();
-        loadKickoffCustoms();
-        renderKickoffRaciTable();
-        alert("🗑️ 已重置完畢！");
-      }
     }
 
     function saveKickoffCustoms() {
