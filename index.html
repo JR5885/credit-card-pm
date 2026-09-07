@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiat & Card Payment PM Command Center (Gantt Team Tagging)</title>
+  <title>Fiat & Card Payment PM Command Center (with Save TAB)</title>
   <style>
     :root {
       --jira-blue: #0052cc;
@@ -37,6 +37,7 @@
     .nav-badge-risk { background: #6554c0; }
     .nav-badge-biz { background: #ff8b00; }
     .nav-badge-kickoff { background: #0052cc; }
+    .nav-badge-save { background: #36b37e; }
 
     /* Main Container */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -314,6 +315,11 @@
         <span id="nav-item-report">📄 產品交付營運報告 (Report)</span>
         <span class="nav-badge" style="background:#36b37e;">80%圖表</span>
       </div>
+      <div class="nav-label" id="nav-lbl-storage">本地持久化管理</div>
+      <div class="nav-item" onclick="switchNav('save')">
+        <span id="nav-item-save">💾 專案存檔 (Save)</span>
+        <span class="nav-badge nav-badge-save">已同步</span>
+      </div>
     </div>
   </aside>
 
@@ -360,8 +366,9 @@
         <h1 id="pageTitle">產品迭代時程 (60/30/10 Roadmap)</h1>
       </div>
       <div class="top-right">
-        <button class="btn" style="background:#42526e;" onclick="exportDataBackup()" title="匯出當前專案資料為 JSON 檔案">💾 備份</button>
-        <button class="btn" style="background:#42526e;" onclick="document.getElementById('importFileInput').click()" title="從 JSON 檔案還原專案資料">📥 匯入</button>
+        <button class="btn" style="background:#36b37e;" onclick="manualSaveNow()" title="手動儲存所有變更至 LocalStorage">💾 立即存檔</button>
+        <button class="btn" style="background:#42526e;" onclick="exportDataBackup()" title="匯出當前專案資料為 JSON 檔案">📥 備份</button>
+        <button class="btn" style="background:#42526e;" onclick="document.getElementById('importFileInput').click()" title="從 JSON 檔案還原專案資料">📤 還原</button>
         <input type="file" id="importFileInput" style="display:none;" accept=".json" onchange="importDataBackup(event)">
 
         <div style="display: flex; align-items: center; gap: 4px; background: #f4f5f7; border: 1px solid var(--jira-border); border-radius: 4px; padding: 2px 6px;">
@@ -391,7 +398,7 @@
     <!-- Content Viewports -->
     <div class="content-viewport">
       
-      <!-- Panel 1: Roadmap (Gantt with Main/Sub Pipelines & Team Tags on Bars) -->
+      <!-- Panel 1: Roadmap (Gantt with Team Tags on Bars) -->
       <div id="view-roadmap" class="panel-view active">
         <div class="panel-tabs">
           <button class="tab-btn active" id="tab-roadmap-gantt" onclick="switchRoadmapSubTab('gantt')">📊 Roadmap (主責團隊標明甘特圖)</button>
@@ -478,16 +485,16 @@
         </div>
       </div>
 
-      <!-- Panel 2: 60% Product UX & Delivery (精細化 User Stories) -->
+      <!-- Panel 2: 60% Product UX & Delivery -->
       <div id="view-ops" class="panel-view">
         <div class="panel-action-bar">
           <div>
-            <span style="font-size:13px; font-weight:700; color:#0052cc;" id="txt-ops-action-title">🎯 60% 支付體驗與產研推進 (Sprint 1~4 故事細化)</span>
+            <span style="font-size:13px; font-weight:700; color:#0052cc;" id="txt-ops-action-title">🎯 60% 法幣信用卡產品研發與體驗推進</span>
             <span style="font-size:12px; color:var(--jira-text-muted); margin-left:6px;" id="txt-ops-action-sub">
-              每一個主責任單位在每個 Sprint 均落實 2~3 個 User Stories，自動同步至甘特圖與看板。
+              項目對齊 Sprint 1~4 推進節奏，自動掛載 <strong>[60% 產研]</strong> 並即時同步至甘特圖與 Jira 看板。
             </span>
           </div>
-          <button class="btn" onclick="openCreateModalWithType('ops')">＋ 新增產研 User Story</button>
+          <button class="btn" onclick="openCreateModalWithType('ops')">＋ 新增產研功能項目</button>
         </div>
         <div class="table-card">
           <table>
@@ -507,22 +514,22 @@
         </div>
       </div>
 
-      <!-- Panel 3: 30% Risk Compliance (精細化 User Stories) -->
+      <!-- Panel 3: 30% Risk Compliance -->
       <div id="view-risk" class="panel-view">
         <div class="panel-action-bar">
           <div>
-            <span style="font-size:13px; font-weight:700; color:#6554c0;" id="txt-risk-action-title">🛡️ 30% 多國 KYC/AML 金融風控監管與安全 (Sprint 1~4)</span>
+            <span style="font-size:13px; font-weight:700; color:#6554c0;" id="txt-risk-action-title">🛡️ 30% 多國 KYC/AML 金融風控監管與安全</span>
             <span style="font-size:12px; color:var(--jira-text-muted); margin-left:6px;" id="txt-risk-action-sub">
-              各風控主責任單位落實 2~3 個 User Stories；通道拒付率 &gt; 0.15% 將觸發紅色 Flag 預警！
+              在此編輯或新增項目，自動掛載 <strong>[30% 風控]</strong>；任一通道拒付率 &gt; 0.15% 將觸發甘特條紅色 Flag 預警！
             </span>
           </div>
-          <button class="btn" style="background:#6554c0;" onclick="openCreateModalWithType('risk')">＋ 新增風控合規 User Story</button>
+          <button class="btn" style="background:#6554c0;" onclick="openCreateModalWithType('risk')">＋ 新增風控合規項目</button>
         </div>
         <div class="table-card">
           <table>
             <thead>
               <tr>
-                <th>風控 User Story / 檢驗模組</th>
+                <th>風控規則庫 / 檢驗模組</th>
                 <th>主責任單位</th>
                 <th>次責任單位</th>
                 <th>月交易監控額 (USD)</th>
@@ -538,22 +545,22 @@
         </div>
       </div>
 
-      <!-- Panel 4: 10% Business & Settlement (精細化 User Stories) -->
+      <!-- Panel 4: 10% Business & Settlement -->
       <div id="view-biz" class="panel-view">
         <div class="panel-action-bar">
           <div>
-            <span style="font-size:13px; font-weight:700; color:#ff8b00;" id="txt-biz-action-title">💼 10% 跨國清算商務與對賬平帳 (Sprint 1~4)</span>
+            <span style="font-size:13px; font-weight:700; color:#ff8b00;" id="txt-biz-action-title">💼 10% 跨國清算商務與對賬平帳</span>
             <span style="font-size:12px; color:var(--jira-text-muted); margin-left:6px;" id="txt-biz-action-sub">
-              各商務主責任單位落實 2~3 個 User Stories，確保鎖匯無誤差與 T+1 平帳。
+              負責法幣清算 Channel 商業協議、實時鎖匯合約對接與 T+1 自動平帳腳本。
             </span>
           </div>
-          <button class="btn" style="background:#ff8b00;" onclick="openCreateModalWithType('biz')">＋ 新增清算商務 User Story</button>
+          <button class="btn" style="background:#ff8b00;" onclick="openCreateModalWithType('biz')">＋ 新增清算商務項目</button>
         </div>
         <div class="table-card">
           <table>
             <thead>
               <tr>
-                <th>清算商務 User Story / 協議模組</th>
+                <th>清算商務協議 / 對接模組</th>
                 <th>主責任單位</th>
                 <th>次責任單位</th>
                 <th>渠道預估月交易額 (USD)</th>
@@ -783,6 +790,37 @@
         </div>
       </div>
 
+      <!-- Panel 8: 本地持久化管理與存檔中心 (Save TAB) -->
+      <div id="view-save" class="panel-view">
+        <div class="panel-action-bar">
+          <div>
+            <h3 style="font-size:15px; font-weight:700; color:#091e42;">💾 專案本地持久化與存檔中心 (Save Management)</h3>
+            <p style="font-size:12px; color:var(--jira-text-muted);">所有編輯、看板拖曳、RACI 異動與 Kickoff 戰略皆即時寫入瀏覽器 LocalStorage。</p>
+          </div>
+          <button class="btn" style="background:#36b37e;" onclick="manualSaveNow()">💾 立即手動存檔</button>
+        </div>
+        <div class="table-card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+            <div style="background:#fafbfc; border:1px solid var(--jira-border); border-radius:6px; padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--jira-text-muted); text-transform:uppercase;">當前任務總數</div>
+              <div id="save-stat-tasks" style="font-size:24px; font-weight:800; color:#0052cc; margin-top:6px;">0 筆</div>
+            </div>
+            <div style="background:#fafbfc; border:1px solid var(--jira-border); border-radius:6px; padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--jira-text-muted); text-transform:uppercase;">SAMR 會議記錄</div>
+              <div id="save-stat-samr" style="font-size:24px; font-weight:800; color:#6554c0; margin-top:6px;">0 筆</div>
+            </div>
+            <div style="background:#fafbfc; border:1px solid var(--jira-border); border-radius:6px; padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--jira-text-muted); text-transform:uppercase;">上次同步時間</div>
+              <div id="save-stat-time" style="font-size:14px; font-weight:700; color:#36b37e; margin-top:10px;">--</div>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--jira-border); padding-top:16px; display:flex; gap:12px;">
+            <button class="btn" style="background:#0052cc;" onclick="exportDataBackup()">📥 匯出完整 JSON 備份檔</button>
+            <button class="btn" style="background:#de350b;" onclick="clearLocalStorageCache()">🗑️ 清除本地快取並重置預設</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -929,12 +967,14 @@
       renderAllViews();
       loadKickoffCustoms();
       renderKickoffRaciTable();
+      updateSaveStats();
     });
 
     function saveToLocalStorage() {
       localStorage.setItem('fiat_card_tasks', JSON.stringify(tasks));
       localStorage.setItem('fiat_card_samr', JSON.stringify(samrRecords));
       localStorage.setItem('fiat_card_raci', JSON.stringify(raciData));
+      updateSaveStats();
     }
 
     function loadFromLocalStorage(key, fallback) {
@@ -943,6 +983,35 @@
         try { return JSON.parse(saved); } catch (e) { return fallback; }
       }
       return fallback;
+    }
+
+    function manualSaveNow() {
+      saveKickoffCustoms();
+      saveToLocalStorage();
+      updateSaveStats();
+      alert("✅ 專案資料已成功手動儲存至 LocalStorage！");
+    }
+
+    function updateSaveStats() {
+      const tEl = document.getElementById("save-stat-tasks");
+      const sEl = document.getElementById("save-stat-samr");
+      const timeEl = document.getElementById("save-stat-time");
+      if (tEl) tEl.textContent = `${tasks.length} 筆`;
+      if (sEl) sEl.textContent = `${samrRecords.length} 筆`;
+      if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
+    }
+
+    function clearLocalStorageCache() {
+      if (confirm("⚠️ 確定要清除所有本地快取並重置為預設資料嗎？")) {
+        localStorage.clear();
+        tasks = JSON.parse(JSON.stringify(defaultTasks));
+        samrRecords = JSON.parse(JSON.stringify(defaultSamr));
+        raciData = JSON.parse(JSON.stringify(defaultRaci));
+        renderAllViews();
+        loadKickoffCustoms();
+        renderKickoffRaciTable();
+        alert("🗑️ 已重置完畢！");
+      }
     }
 
     function saveKickoffCustoms() {
@@ -1610,6 +1679,8 @@
         navSamr: "🗣️ 跨部門開會 SAMR",
         navClient: "營運數據與結報",
         navReport: "📄 產品交付營運報告 (Report)",
+        navStorage: "本地持久化管理",
+        navSave: "💾 專案存檔 (Save)",
         pageTitleRoadmap: "產品迭代時程 (60/30/10 Roadmap)",
         tabGantt: "📊 Roadmap (主責團隊標明甘特圖)",
         tabBoard: "📋 Jira 敏捷看板 (點卡片直接編輯)",
@@ -1634,6 +1705,8 @@
         navSamr: "🗣️ Cross-Team SAMR Hub",
         navClient: "OPERATIONS & BRIEFING",
         navReport: "📄 Executive Status Briefing",
+        navStorage: "STORAGE MANAGEMENT",
+        navSave: "💾 Project Save (Save)",
         pageTitleRoadmap: "Fiat & Card Roadmap (60/30/10 Framework)",
         tabGantt: "📊 Roadmap (Gantt with Team Tags)",
         tabBoard: "📋 Jira Agile Board (Click Card to Edit)",
@@ -1666,6 +1739,8 @@
       document.getElementById("nav-item-samr").textContent = d.navSamr;
       document.getElementById("nav-lbl-client").textContent = d.navClient;
       document.getElementById("nav-item-report").textContent = d.navReport;
+      document.getElementById("nav-lbl-storage").textContent = d.navStorage;
+      document.getElementById("nav-item-save").textContent = d.navSave;
 
       document.getElementById("pageTitle").textContent = d.pageTitleRoadmap;
       document.getElementById("tab-roadmap-gantt").textContent = d.tabGantt;
@@ -1687,19 +1762,7 @@
     function switchNav(navKey) {
       document.querySelectorAll(".panel-view").forEach(el => el.classList.remove("active"));
       document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
-
-      const titles = {
-        roadmap: currentLang==='zh'?"產品迭代時程 (60/30/10 Roadmap)":"Fiat & Card Roadmap (60/30/10 Framework)",
-        ops: currentLang==='zh'?"🎯 60% 支付體驗與產研推進":"🎯 60% Payment UX & Dev Pipeline",
-        risk: currentLang==='zh'?"🛡️ 30% 風控合規與防護":"🛡️ 30% Risk & Compliance",
-        biz: currentLang==='zh'?"💼 10% 清算商務與平帳":"💼 10% Settlement & Finance",
-        kickoff: currentLang==='zh'?"🚀 Kickoff 會議戰略 (三大基準指標與 RACI 矩陣)":"🚀 Kickoff Strategy (Core Mandates & RACI Matrix)",
-        samr: currentLang==='zh'?"🗣️ 跨部門溝通決策台 (SAMR)":"🗣️ Cross-Team SAMR Decision Hub",
-        report: currentLang==='zh'?"📄 產品交付營運報告 (Report)":"📄 Executive Product & Operations Briefing"
-      };
-
       document.getElementById(`view-${navKey}`).classList.add("active");
-      document.getElementById("pageTitle").textContent = titles[navKey];
       event.currentTarget.classList.add("active");
     }
 
