@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiat & Card Payment PM Command Center (Jira + OKR)</title>
+  <title>Fiat & Card Payment PM Command Center</title>
   <style>
     :root {
       --jira-blue: #0052cc;
@@ -15,780 +15,253 @@
       --jira-purple: #6554c0;
       --jira-red: #de350b;
       --jira-text-muted: #6b778c;
-      --cell-w: 100px;
-      --tree-w: 580px;
+      --cell-w: 95px;
+      --tree-w: 480px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif; }
     body { background-color: #fff; color: var(--jira-dark); display: flex; height: 100vh; overflow: hidden; }
 
     /* Left Sidebar */
-    .sidebar { width: 260px; background: #0747a6; color: #fff; display: flex; flex-direction: column; flex-shrink: 0; }
-    .brand { padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar { width: 230px; background: #0747a6; color: #fff; display: flex; flex-direction: column; flex-shrink: 0; }
+    .brand { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between; }
     .brand h2 { font-size: 15px; font-weight: 700; }
-    .nav-group { padding: 12px 8px; flex: 1; overflow-y: auto; }
-    .nav-label { font-size: 11px; text-transform: uppercase; color: #8eb8f5; font-weight: 700; margin: 10px 0 6px 8px; }
+    .nav-group { padding: 10px 8px; flex: 1; }
     .nav-item { padding: 9px 12px; border-radius: 5px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
     .nav-item:hover { background: rgba(255,255,255,0.12); }
     .nav-item.active { background: rgba(255,255,255,0.22); font-weight: 600; }
-    .nav-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: rgba(255,255,255,0.2); }
-    .nav-badge-samr { background: #ffab00; color: #172b4d; font-weight: 700; }
-    .nav-badge-report { background: #36b37e; color: #fff; font-weight: 700; }
 
     /* Main Container */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-    /* 常駐頂部：OKR 目標提醒列 */
-    .pinned-okr-bar {
-      background: #091e42;
-      color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      border-bottom: 2px solid #0052cc;
-      flex-shrink: 0;
-      z-index: 50;
-    }
-    .okr-header-row { display: flex; justify-content: space-between; align-items: center; }
-    .okr-tag { background: #ffab00; color: #172b4d; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 3px; }
-    .okr-inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .okr-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 6px 10px; }
-    .okr-box-title { font-size: 11px; color: #4c9aff; font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; }
-    .okr-editable { width: 100%; background: transparent; border: 1px solid transparent; color: #fff; font-size: 12px; outline: none; border-radius: 2px; }
-    .okr-editable:focus { background: rgba(255,255,255,0.15); border-color: #4c9aff; }
-
-    /* Top Bar with Global Language Switcher */
+    /* Top Bar */
     .top-bar { height: 50px; border-bottom: 1px solid var(--jira-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #fff; flex-shrink: 0; }
     .top-left h1 { font-size: 16px; font-weight: 700; }
-    .top-right { display: flex; align-items: center; gap: 12px; }
-
-    .global-lang-tabs { display: flex; background: #ebecf0; border-radius: 20px; padding: 2px; }
-    .global-lang-btn { background: transparent; border: none; padding: 4px 12px; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 16px; color: #42526e; }
-    .global-lang-btn.active { background: #0052cc; color: #fff; }
-
+    .top-right { display: flex; align-items: center; gap: 10px; }
     .btn { background: var(--jira-blue); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
     .btn:hover { background: #0065ff; }
 
-    /* PIP 懸浮膠囊 */
-    .pip-floater {
-      position: absolute;
-      top: 130px;
-      right: 20px;
-      background: rgba(23, 43, 77, 0.94);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 24px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 100;
-      font-size: 12px;
-    }
-    .pip-ring { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #0052cc; font-size: 11px; font-weight: 700; border: 2px solid #36b37e; }
+    /* View Switch Tabs (甘特圖 vs Jira 看板) */
+    .view-tabs-bar { display: flex; gap: 6px; padding: 10px 20px 0 20px; background: #fafbfc; border-bottom: 1px solid var(--jira-border); flex-shrink: 0; }
+    .tab-btn { padding: 8px 16px; font-size: 13px; font-weight: 700; color: var(--jira-text-muted); cursor: pointer; border: none; background: transparent; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab-btn.active { color: var(--jira-blue); border-bottom-color: var(--jira-blue); background: #fff; border-top-left-radius: 4px; border-top-right-radius: 4px; border-left: 1px solid var(--jira-border); border-right: 1px solid var(--jira-border); }
 
-    /* Content Area */
-    .content-viewport { flex: 1; overflow: auto; background: var(--jira-bg); }
-    .panel-view { display: none; padding: 18px; height: 100%; flex-direction: column; }
+    /* Workspace Panels */
+    .content-viewport { flex: 1; overflow: hidden; display: flex; flex-direction: column; background: var(--jira-bg); }
+    .panel-view { display: none; padding: 16px; height: 100%; flex-direction: column; overflow: hidden; }
     .panel-view.active { display: flex; }
 
-    /* Tabs */
-    .panel-tabs { display: flex; gap: 6px; border-bottom: 2px solid var(--jira-border); margin-bottom: 14px; }
-    .tab-btn { padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--jira-text-muted); cursor: pointer; border: none; background: transparent; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-    .tab-btn.active { color: var(--jira-blue); border-bottom-color: var(--jira-blue); }
-    .tab-content { display: none; flex-direction: column; flex: 1; }
-    .tab-content.active { display: flex; }
-
-    .panel-action-bar {
-      background: #fff;
-      border: 1px solid var(--jira-border);
-      border-radius: 5px;
-      padding: 10px 16px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Tables */
-    .table-card { background: #fff; border: 1px solid var(--jira-border); border-radius: 5px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-    th { background: #fafbfc; border-bottom: 2px solid var(--jira-border); padding: 10px 12px; color: var(--jira-text-muted); font-size: 11px; text-transform: uppercase; font-weight: 700; }
-    td { padding: 8px 12px; border-bottom: 1px solid #ebecf0; vertical-align: middle; }
-    tr:hover { background: #fafbfc; }
-    td input, td select, td textarea { width: 100%; padding: 5px 6px; border: 1px solid transparent; border-radius: 4px; font-size: 12px; background: transparent; }
-    td textarea { resize: vertical; min-height: 40px; font-family: inherit; }
-    td input:focus, td select:focus, td textarea:focus { background: #fff; border-color: #4c9aff; outline: none; }
-
-    /* 狀態標籤 */
-    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-    .badge-safe { background: #e3fcef; color: #006644; border: 1px solid #abf5d1; }
-    .badge-danger { background: #ffebe6; color: #bf2600; border: 1px solid #ffbdad; }
-
-    .red-flag-alert {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: #ffebe6;
-      color: #bf2600;
-      border: 1px solid #ffbdad;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      cursor: pointer;
-      animation: flagBlink 1.5s infinite;
-      box-shadow: 0 1px 3px rgba(222, 53, 11, 0.2);
-    }
-    .red-flag-alert:hover { background: #ffbdad; }
-
-    @keyframes flagBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.97); } 100% { opacity: 1; transform: scale(1); } }
-
-    /* Gantt Workspace */
-    .gantt-root { display: flex; flex: 1; border: 1px solid var(--jira-border); border-radius: 5px; background: #fff; overflow: hidden; position: relative; }
-    .gantt-tree { width: var(--tree-w); min-width: 380px; max-width: 850px; background: #fafbfc; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
-    .gantt-tree-header { height: 40px; border-bottom: 1px solid var(--jira-border); padding: 0 12px; display: flex; align-items: center; font-size: 11px; font-weight: 700; color: var(--jira-text-muted); }
+    /* ========================================================
+       1. Gantt Workspace (Main Pipeline & Sub Pipeline)
+       ======================================================== */
+    .gantt-root { display: flex; flex: 1; border: 1px solid var(--jira-border); border-radius: 6px; background: #fff; overflow: hidden; position: relative; }
+    .gantt-tree { width: var(--tree-w); min-width: 380px; max-width: 650px; background: #fafbfc; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .gantt-tree-header { height: 42px; border-bottom: 1px solid var(--jira-border); padding: 0 14px; display: flex; align-items: center; font-size: 12px; font-weight: 700; color: var(--jira-text-muted); }
     .gantt-tree-body { flex: 1; overflow-y: auto; }
-    .tree-row { height: 46px; border-bottom: 1px solid #ebecf0; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+
+    .tree-row { height: 44px; border-bottom: 1px solid #ebecf0; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
     .tree-row:hover { background: var(--jira-hover); }
-    .tree-info { display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .tree-row.row-main { background: #f4f5f7; font-weight: 700; border-left: 4px solid var(--jira-blue); }
+    .tree-row.row-sub { padding-left: 28px; }
 
-    /* 分割條 */
-    .splitter-resizer { width: 6px; cursor: col-resize; background: var(--jira-border); position: relative; flex-shrink: 0; z-index: 30; transition: background 0.15s; }
+    .pipeline-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 700; flex-shrink: 0; margin-right: 6px; }
+    .badge-main { background: #deebff; color: #0747a6; }
+    .badge-sub { background: #eae6ff; color: #403294; }
+
+    /* 分割把手 */
+    .splitter-resizer { width: 6px; cursor: col-resize; background: var(--jira-border); flex-shrink: 0; z-index: 20; transition: background 0.15s; }
     .splitter-resizer:hover, .splitter-resizer.resizing { background: var(--jira-blue); }
-    .splitter-resizer::after { content: ""; position: absolute; top: 50%; left: 1px; transform: translateY(-50%); width: 4px; height: 24px; border-left: 1px solid rgba(0,0,0,0.3); border-right: 1px solid rgba(0,0,0,0.3); }
 
-    .okr-type-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; }
-    .okr-badge-o1 { background: #deebff; color: #0747a6; border: 1px solid #b3d4ff; }
-    .okr-badge-o2 { background: #eae6ff; color: #403294; border: 1px solid #d3cbfb; }
-
-    .samr-annotation { display: inline-flex; align-items: center; background: #fff0b3; color: #7a4b04; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; cursor: help; border: 1px solid #ffe380; margin-left: 4px; flex-shrink: 0; }
-    .samr-annotation:hover { background: #ffc400; }
-
-    .color-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
-    .palette-popover { position: absolute; background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 6px; display: none; grid-template-columns: repeat(4, 1fr); gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 200; }
-
-    /* Timeline Matrix Area */
+    /* Timeline Matrix */
     .gantt-timeline { flex: 1; display: flex; flex-direction: column; overflow-x: auto; position: relative; user-select: none; }
-    .timeline-hdr { height: 40px; border-bottom: 1px solid var(--jira-border); display: flex; background: #fafbfc; }
+    .timeline-hdr { height: 42px; border-bottom: 1px solid var(--jira-border); display: flex; background: #fafbfc; }
     .week-col { width: var(--cell-w); min-width: var(--cell-w); border-right: 1px dashed var(--jira-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--jira-text-muted); }
-    .timeline-bdy { position: relative; flex: 1; }
-    .timeline-row { height: 46px; border-bottom: 1px solid #ebecf0; position: relative; display: flex; }
+    .timeline-bdy { position: relative; flex: 1; overflow-y: auto; }
+    .timeline-row { height: 44px; border-bottom: 1px solid #ebecf0; position: relative; display: flex; }
     .cell-grid { width: var(--cell-w); min-width: var(--cell-w); border-right: 1px dashed #f4f5f7; height: 100%; }
 
-    .gantt-bar {
-      position: absolute;
-      top: 9px;
-      height: 28px;
-      border-radius: 4px;
-      color: #fff;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      cursor: grab;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.18);
-      z-index: 10;
-      white-space: nowrap;
-    }
-    .gantt-bar:active { cursor: grabbing; }
-    .gantt-bar.bar-breached { background-color: #de350b !important; border: 1px solid #ffbdad; box-shadow: 0 0 6px rgba(222, 53, 11, 0.5); }
+    .gantt-bar { position: absolute; top: 9px; height: 26px; border-radius: 4px; color: #fff; font-size: 11px; display: flex; align-items: center; padding: 0 8px; cursor: grab; box-shadow: 0 1px 3px rgba(0,0,0,0.18); z-index: 10; white-space: nowrap; }
+    .gantt-bar.bar-main { background: #0052cc; border-radius: 6px; font-weight: 700; }
+    .gantt-bar.bar-sub { background: #4c9aff; }
     .resizer { position: absolute; right: 0; top: 0; width: 6px; height: 100%; cursor: col-resize; background: rgba(0,0,0,0.2); border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 
     /* ========================================================
-       Jira Agile Board (BACKLOG, DEV, TEST, PUBLISH) Styles
+       2. Jira 敏捷看板 (可點擊卡片彈出編輯 Modal)
        ======================================================== */
-    .jira-board-container {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      flex: 1;
-      overflow-x: auto;
-      padding: 4px 0 12px 0;
-    }
-    .jira-column {
-      background: #f4f5f7;
-      border-radius: 6px;
-      border: 1px solid var(--jira-border);
-      display: flex;
-      flex-direction: column;
-      max-height: 100%;
-      min-width: 250px;
-    }
-    .column-header {
-      padding: 10px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--jira-text-muted);
-      text-transform: uppercase;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid transparent;
-    }
+    .jira-board-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; flex: 1; overflow-x: auto; padding-top: 4px; }
+    .jira-column { background: #f4f5f7; border-radius: 6px; border: 1px solid var(--jira-border); display: flex; flex-direction: column; min-width: 240px; }
+    .column-header { padding: 10px 12px; font-size: 12px; font-weight: 700; color: var(--jira-text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid transparent; }
     .col-backlog { border-bottom-color: #6554c0; }
     .col-dev { border-bottom-color: #0052cc; }
     .col-test { border-bottom-color: #ffab00; }
     .col-publish { border-bottom-color: #36b37e; }
+    .column-count { background: #dfe1e6; color: #172b4d; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 10px; }
 
-    .column-count {
-      background: #dfe1e6;
-      color: #172b4d;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 10px;
-    }
+    .column-cards-body { padding: 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; min-height: 120px; }
+    .column-cards-body.dragover { background: #e3fcef; border: 2px dashed #36b37e; border-radius: 4px; }
 
-    .column-cards-body {
-      padding: 8px;
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 120px;
-    }
-    .column-cards-body.dragover {
-      background: #e3fcef;
-      border: 2px dashed #36b37e;
-      border-radius: 4px;
-    }
-
-    /* Jira Issue Card */
+    /* 卡片設計 (點開可編輯) */
     .jira-card {
       background: #fff;
-      border-radius: 4px;
+      border-radius: 5px;
       border: 1px solid #dfe1e6;
-      box-shadow: 0 1px 2px rgba(9, 30, 66, 0.1);
+      box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
       padding: 10px;
-      cursor: grab;
-      user-select: none;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: 0.15s;
     }
-    .jira-card:active { cursor: grabbing; }
-    .jira-card:hover { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(9, 30, 66, 0.15); }
-    .jira-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .jira-card-title { font-size: 12px; font-weight: 600; color: #172b4d; cursor: pointer; }
-    .jira-card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--jira-text-muted); margin-top: 4px; }
-    .jira-issue-key { font-weight: 700; color: #0052cc; }
-    .jira-assignee { background: #ebecf0; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
+    .jira-card:hover { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(9, 30, 66, 0.15); border-color: #4c9aff; }
+    .card-parent-tag { font-size: 10px; color: #5e6c84; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .card-title { font-size: 13px; font-weight: 600; color: #172b4d; line-height: 1.4; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--jira-text-muted); margin-top: 4px; }
+    .card-key { font-weight: 700; color: #0052cc; }
+    .card-assignee { background: #ebecf0; padding: 2px 6px; border-radius: 10px; font-size: 10px; }
 
-    .column-footer {
-      padding: 8px;
-      border-top: 1px solid #ebecf0;
+    .column-footer { padding: 8px; border-top: 1px solid #ebecf0; }
+    .btn-add-issue { width: 100%; background: transparent; border: 1px dashed #b3bac5; color: #42526e; font-size: 12px; font-weight: 600; padding: 6px; border-radius: 4px; cursor: pointer; text-align: left; }
+    .btn-add-issue:hover { background: #ebecf0; color: #172b4d; }
+
+    /* ========================================================
+       3. 輕量點擊編輯彈窗 (Modal)
+       ======================================================== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(9, 30, 66, 0.54);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
-    .btn-create-card {
-      width: 100%;
-      background: transparent;
-      border: 1px dashed #b3bac5;
-      color: #42526e;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 6px;
-      border-radius: 4px;
-      cursor: pointer;
-      text-align: left;
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      width: 480px;
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(9, 30, 66, 0.25);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
-    .btn-create-card:hover { background: #ebecf0; color: #172b4d; }
-
-    /* Client Report Panel 樣式 */
-    .report-card-container { background: #fff; border: 1px solid var(--jira-border); border-radius: 6px; padding: 24px; overflow-y: auto; }
-    .report-subbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--jira-border); padding-bottom: 14px; margin-bottom: 20px; }
-
-    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-    .kpi-card { border: 1px solid var(--jira-border); border-radius: 6px; padding: 14px; background: #fafbfc; position: relative; overflow: hidden; }
-    .kpi-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
-    .kpi-blue::before { background: #0052cc; }
-    .kpi-green::before { background: #36b37e; }
-    .kpi-purple::before { background: #6554c0; }
-    .kpi-yellow::before { background: #ffab00; }
-    .kpi-title { font-size: 11px; font-weight: 700; color: var(--jira-text-muted); text-transform: uppercase; }
-    .kpi-value { font-size: 26px; font-weight: 800; margin: 6px 0; color: #091e42; }
-    .kpi-hint { font-size: 11px; font-weight: 600; }
-
-    .chart-dual-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-bottom: 20px; }
-    .chart-box { border: 1px solid var(--jira-border); border-radius: 6px; padding: 16px; background: #fff; }
-    .chart-box h4 { font-size: 13px; font-weight: 700; color: #091e42; margin-bottom: 12px; }
-
-    .pipe-group { display: flex; flex-direction: column; gap: 12px; }
-    .pipe-row { display: flex; flex-direction: column; gap: 4px; }
-    .pipe-meta { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
-    .pipe-bar-bg { height: 9px; background: #ebecf0; border-radius: 5px; overflow: hidden; }
-    .pipe-bar-fill { height: 100%; border-radius: 5px; }
-
-    .donut-layout { display: flex; align-items: center; justify-content: space-around; height: 140px; }
-    .donut-svg { width: 110px; height: 110px; transform: rotate(-90deg); }
-    .donut-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 600; }
-    .legend-row { display: flex; align-items: center; gap: 6px; }
-    .dot-chip { width: 9px; height: 9px; border-radius: 2px; }
-
-    .text-aux-section { border-top: 1px solid var(--jira-border); padding-top: 16px; margin-top: 6px; }
-    .text-aux-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-    .text-aux-card { background: #fafbfc; border-left: 3px solid #0052cc; padding: 10px 12px; font-size: 12px; line-height: 1.5; border-radius: 0 4px 4px 0; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--jira-border); padding-bottom: 10px; }
+    .modal-header h3 { font-size: 16px; font-weight: 700; }
+    .modal-close { cursor: pointer; font-size: 16px; color: var(--jira-text-muted); border: none; background: transparent; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 11px; font-weight: 700; color: var(--jira-text-muted); text-transform: uppercase; }
+    .form-group input, .form-group select { padding: 8px 10px; border: 1px solid var(--jira-border); border-radius: 4px; font-size: 13px; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--jira-blue); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- Left Sidebar Navigation -->
+  <!-- Left Sidebar -->
   <aside class="sidebar">
     <div class="brand">
       <h2>Fiat & Card Hub</h2>
-      <span style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">FinTech PM</span>
+      <span style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">PM Agile</span>
     </div>
     <div class="nav-group">
-      <div class="nav-label" id="nav-lbl-core">產品核心面板</div>
-      <div class="nav-item active" onclick="switchNav('roadmap')">
-        <span id="nav-item-roadmap">📊 產品迭代時程 (Roadmap)</span>
-      </div>
-      <div class="nav-item" onclick="switchNav('ops')">
-        <span id="nav-item-ops">🎯 60% 支付產品與體驗優化</span>
-        <span class="nav-badge">60%</span>
-      </div>
-      <div class="nav-item" onclick="switchNav('biz')">
-        <span id="nav-item-biz">🛡️ 40% 風控合規與清算監控</span>
-        <span class="nav-badge">40%</span>
-      </div>
-      <div class="nav-label" id="nav-lbl-collab">跨部門協作決策</div>
-      <div class="nav-item" onclick="switchNav('samr')">
-        <span id="nav-item-samr">🗣️ 跨部門開會 SAMR</span>
-        <span class="nav-badge nav-badge-samr" id="nav-badge-samr-txt">決策連動</span>
-      </div>
-      <div class="nav-label" id="nav-lbl-client">營運數據與結報</div>
-      <div class="nav-item" onclick="switchNav('report')">
-        <span id="nav-item-report">📄 產品交付營運報告 (Report)</span>
-        <span class="nav-badge nav-badge-report">80%圖表</span>
-      </div>
+      <div class="nav-item active">📊 產品迭代時程 (Roadmap)</div>
+      <div class="nav-item" onclick="alert('提示：主次 Pipeline 與 Jira 敏捷看板已整合於主視圖，直接點選分頁即可！')">🎯 支付產品與 UX 優化</div>
+      <div class="nav-item" onclick="alert('提示：可於各項目內直接編輯清算與風控對接狀態！')">🛡️ 跨國清算與風控</div>
     </div>
   </aside>
 
-  <!-- Main View Area -->
+  <!-- Main Workspace -->
   <div class="main">
     
-    <!-- 頂部常駐 OKR 看板 -->
-    <div class="pinned-okr-bar">
-      <div class="okr-header-row">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="okr-tag" id="txt-okr-tag">團隊 OKR 目標常駐</span>
-          <span style="font-size: 12px; color: #b3d4ff;" id="txt-okr-subtitle">法幣信用卡支付雙核指標：極致用戶體驗 ＋ 金金融合規風控（可直接修改）</span>
-        </div>
-        <span style="font-size: 11px; color: #8eb8f5;" id="txt-okr-locked">實時監控鎖定</span>
-      </div>
-      <div class="okr-inputs-row">
-        <div class="okr-box">
-          <div class="okr-box-title">
-            <span id="txt-okr-o1-t">🎯 60% 支付體驗與產研敏捷交付 (Objective 1)</span>
-            <span id="txt-okr-o1-metric">爭議降解 ≥ 20% | 成功率 ≥ 98%</span>
-          </div>
-          <input class="okr-editable" id="input-okr-o1" type="text" value="O1: 優化跨國信用卡體驗；KR: 客服爭議事件減少 ≥ 20%、綁卡轉化率提升 15%、PRD/Figma 準時交付">
-        </div>
-        <div class="okr-box">
-          <div class="okr-box-title">
-            <span id="txt-okr-o2-t">🛡️ 40% 跨國清算與 KYC/AML 風控把關 (Objective 2)</span>
-            <span id="okr-biz-margin-indicator">拒付率: --%</span>
-          </div>
-          <input class="okr-editable" id="input-okr-o2" type="text" value="O2: 守住跨國支付安全防線；KR: 信用卡拒付率 (Chargeback) ≤ 0.15%、清算 T+1 對賬 100% 覆蓋">
-        </div>
-      </div>
-    </div>
-
-    <!-- Top Action Bar -->
     <header class="top-bar">
       <div class="top-left">
-        <h1 id="pageTitle">產品迭代時程 (Roadmap 甘特圖)</h1>
+        <h1>產品迭代時程 (Roadmap & Agile Board)</h1>
       </div>
       <div class="top-right">
-        <!-- 甘特圖週寬度縮放控制 -->
-        <div style="display: flex; align-items: center; gap: 4px; background: #f4f5f7; border: 1px solid var(--jira-border); border-radius: 4px; padding: 2px 6px;">
-          <span style="font-size: 11px; color: var(--jira-text-muted); font-weight: 600;" id="txt-zoom-label">週寬縮放:</span>
-          <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(-10)">－</button>
-          <button class="btn" style="background:#dfe1e6; color:#172b4d; padding:2px 8px; font-size:11px;" onclick="zoomTimeline(10)">＋</button>
-        </div>
-
-        <!-- 全局語言切換 TAB (ZH / ENG) -->
-        <div class="global-lang-tabs">
-          <button class="global-lang-btn active" id="btn-global-zh" onclick="setGlobalLanguage('zh')">中文 (ZH)</button>
-          <button class="global-lang-btn" id="btn-global-en" onclick="setGlobalLanguage('en')">English (ENG)</button>
-        </div>
-
-        <button class="btn" id="btn-top-add" onclick="openAddTaskModal()">＋ 新增 Epic / Task</button>
+        <button class="btn" onclick="openCreateModal()">＋ 新增 Pipeline / 任務</button>
       </div>
     </header>
 
-    <!-- PIP 懸浮膠囊 -->
-    <div class="pip-floater" id="pipContainer">
-      <div class="pip-ring" id="pipValue">0%</div>
-      <div>
-        <div style="font-weight: 700;" id="txt-pip-title">產品健康進度 (PIP)</div>
-        <div id="pipSub" style="font-size: 11px; color: #b3bac5;">60% 產研: 0% | 40% 風控: 0%</div>
-      </div>
+    <!-- 主分頁切換：甘特圖 (Roadmap) vs 敏捷看板 (Board) -->
+    <div class="view-tabs-bar">
+      <button class="tab-btn active" id="btn-tab-gantt" onclick="switchViewTab('gantt')">📊 Roadmap (主/次甘特圖)</button>
+      <button class="tab-btn" id="btn-tab-board" onclick="switchViewTab('board')">⚡ Jira 敏捷看板 (點卡片直接編輯)</button>
     </div>
 
-    <!-- Content Viewports -->
     <div class="content-viewport">
       
-      <!-- Panel 1: Roadmap (Gantt Chart & Jira Agile Board with Sub Tabs) -->
-      <div id="view-roadmap" class="panel-view active">
-        
-        <!-- 子分頁：Roadmap 甘特圖 vs Jira 看板 (BACKLOG, DEV, TEST, PUBLISH) -->
-        <div class="panel-tabs">
-          <button class="tab-btn active" id="tab-roadmap-gantt" onclick="switchRoadmapSubTab('gantt')">📊 Roadmap (甘特圖)</button>
-          <button class="tab-btn" id="tab-roadmap-board" onclick="switchRoadmapSubTab('board')">📋 Jira 敏捷看板 (Board: Backlog / Dev / Test / Publish)</button>
-        </div>
-
-        <!-- SubTab 1: 原有甘特圖工作台 -->
-        <div id="roadmap-sub-gantt" class="tab-content active" style="flex:1; display:flex;">
-          <!-- 動態風控高危全域警示條 -->
-          <div id="gantt-margin-alert-bar" style="display:none; background:#ffebe6; border:1px solid #ffbdad; border-radius:4px; padding:8px 14px; margin-bottom:12px; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#bf2600; font-weight:700;">
-              <span style="font-size:16px;">🚨</span>
-              <span id="txt-gantt-alert-msg">【風控拒付率失守警報】監控到信用卡 Chargeback 爭議率達 <strong id="alert-bar-margin-val">0.18%</strong>（高於 0.15% OKR 風險紅線）！已向「風控合約組 / 清算通道」觸發告警。</span>
-            </div>
-            <button class="btn" style="background:#de350b; font-size:11px; padding:4px 10px;" id="btn-gantt-24h" onclick="triggerUrgentMeetingPrompt()">🚨 24 小時內召開緊急風控清算會議</button>
+      <!-- 視圖 1: 主次甘特圖 (Main & Sub Pipeline) -->
+      <div id="view-gantt" class="panel-view active">
+        <div class="gantt-root">
+          <!-- 左側 Pipeline 清單 -->
+          <div class="gantt-tree" id="ganttTreePanel">
+            <div class="gantt-tree-header">主要 PIPELINE / SUB PIPELINE 階層</div>
+            <div class="gantt-tree-body" id="treeRows"></div>
           </div>
 
-          <div class="gantt-root" id="ganttRootContainer">
-            <div class="gantt-tree" id="ganttTreePanel">
-              <div class="gantt-tree-header" id="txt-tree-header">產品模組 Pipeline (對齊 OKR 屬性 + 動態告警)</div>
-              <div class="gantt-tree-body" id="treeRows"></div>
-            </div>
-            <div class="splitter-resizer" id="splitterResizer" title="左右按住拖曳以伸縮任務欄與時間軸寬度"></div>
-            <div class="gantt-timeline" id="ganttTimelinePanel">
-              <div class="timeline-hdr" id="timelineHeader"></div>
-              <div class="timeline-bdy" id="timelineRows"></div>
-            </div>
-          </div>
-        </div>
+          <!-- 分割拉桿 -->
+          <div class="splitter-resizer" id="splitterResizer" title="按住拖曳調整左右欄位寬度"></div>
 
-        <!-- SubTab 2: Jira 4 欄可編輯看板 (BACKLOG, DEV, TEST, PUBLISH) -->
-        <div id="roadmap-sub-board" class="tab-content" style="flex:1;">
-          <div class="panel-action-bar">
-            <div>
-              <span style="font-size:13px; font-weight:700; color:#0052cc;" id="txt-board-tip-title">⚡ Jira 敏捷看板工作流 (可直接拖曳卡片或編輯)</span>
-              <span style="font-size:12px; color:var(--jira-text-muted); margin-left:6px;" id="txt-board-tip-sub">
-                支援按住卡片在不同狀態欄拖拉流轉，雙擊卡片名稱可改名，狀態變更將即時同步更新甘特圖與進度指標。
-              </span>
-            </div>
-          </div>
-
-          <div class="jira-board-container" id="jiraBoardContainer">
-            <!-- BACKLOG 欄位 -->
-            <div class="jira-column">
-              <div class="column-header col-backlog">
-                <span id="lbl-col-backlog">BACKLOG (需求待辦)</span>
-                <span class="column-count" id="count-backlog">0</span>
-              </div>
-              <div class="column-cards-body" id="col-body-backlog" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'backlog')" ondragleave="handleDragLeave(event)"></div>
-              <div class="column-footer">
-                <button class="btn-create-card" onclick="createNewIssue('backlog')">＋ <span class="txt-create-issue">建立 Issue</span></button>
-              </div>
-            </div>
-
-            <!-- DEV 欄位 -->
-            <div class="jira-column">
-              <div class="column-header col-dev">
-                <span id="lbl-col-dev">DEV (研發與對接)</span>
-                <span class="column-count" id="count-dev">0</span>
-              </div>
-              <div class="column-cards-body" id="col-body-dev" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'dev')" ondragleave="handleDragLeave(event)"></div>
-              <div class="column-footer">
-                <button class="btn-create-card" onclick="createNewIssue('dev')">＋ <span class="txt-create-issue">建立 Issue</span></button>
-              </div>
-            </div>
-
-            <!-- TEST 欄位 -->
-            <div class="jira-column">
-              <div class="column-header col-test">
-                <span id="lbl-col-test">TEST (測試與風控驗證)</span>
-                <span class="column-count" id="count-test">0</span>
-              </div>
-              <div class="column-cards-body" id="col-body-test" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'test')" ondragleave="handleDragLeave(event)"></div>
-              <div class="column-footer">
-                <button class="btn-create-card" onclick="createNewIssue('test')">＋ <span class="txt-create-issue">建立 Issue</span></button>
-              </div>
-            </div>
-
-            <!-- PUBLISH 欄位 -->
-            <div class="jira-column">
-              <div class="column-header col-publish">
-                <span id="lbl-col-publish">PUBLISH (已發版 / 上線)</span>
-                <span class="column-count" id="count-publish">0</span>
-              </div>
-              <div class="column-cards-body" id="col-body-publish" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'publish')" ondragleave="handleDragLeave(event)"></div>
-              <div class="column-footer">
-                <button class="btn-create-card" onclick="createNewIssue('publish')">＋ <span class="txt-create-issue">建立 Issue</span></button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Panel 2: 60% Product UX & Delivery -->
-      <div id="view-ops" class="panel-view">
-        <div class="panel-tabs">
-          <button class="tab-btn active" id="tab-ops-schedule" onclick="switchSubTab('ops', 'schedule')">📋 支付功能研發與 UX 交付清單</button>
-          <button class="tab-btn" id="tab-ops-okr" onclick="switchSubTab('ops', 'okr')">🎯 對齊 60% 支付體驗 OKR</button>
-        </div>
-        <div id="ops-sub-schedule" class="tab-content active">
-          <div class="panel-action-bar">
-            <div>
-              <span style="font-size:13px; font-weight:700; color:#0052cc;" id="txt-ops-action-title">🎯 60% 法幣信用卡產品研發與體驗推進</span>
-              <span style="font-size:12px; color:var(--jira-text-muted); margin-left:6px;" id="txt-ops-action-sub">
-                在此編輯或新增項目，將自動掛載 <strong>[60% 產研 (O1)]</strong> 並即時同步至甘特圖時程矩陣與 Jira 看板。
-              </span>
-            </div>
-            <button class="btn" id="btn-ops-add" onclick="addOpsItemPrompt()">＋ 新增產研功能項目</button>
-          </div>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th id="th-ops-name">支付功能需求 / User Story</th>
-                  <th id="th-ops-pri">主責任單位</th>
-                  <th id="th-ops-sec">次責任單位</th>
-                  <th id="th-ops-dod">驗收交付標準 (DoD)</th>
-                  <th id="th-ops-status">狀態</th>
-                  <th id="th-ops-progress">進度 (%)</th>
-                  <th id="th-ops-action">操作</th>
-                </tr>
-              </thead>
-              <tbody id="opsTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div id="ops-sub-okr" class="tab-content">
-          <div class="table-card" style="padding: 16px;">
-            <h3 style="color: #0052cc; margin-bottom: 10px;" id="txt-ops-okr-m-title">🎯 對齊 60% 支付體驗與爭議降解 OKR 指標矩陣</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th id="th-ops-okr-kr">對齊 OKR 關鍵成果</th>
-                  <th id="th-ops-okr-wt">權重</th>
-                  <th id="th-ops-okr-pri">主責單位</th>
-                  <th id="th-ops-okr-sec">次責單位</th>
-                  <th id="th-ops-okr-val">當前量化指標達成度</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong id="kr-ops-1-t">KR 1.1: 信用卡綁卡與支付失敗引導優化，客服爭議事件降解 ≥ 20%</strong></td>
-                  <td>35%</td>
-                  <td id="kr-ops-1-pri">前台產品組</td>
-                  <td id="kr-ops-1-sec">客服運營組</td>
-                  <td><input type="text" id="kr-ops-1-val" value="失敗錯誤碼導引已上線，客訴率下降 22.4%"></td>
-                </tr>
-                <tr>
-                  <td><strong id="kr-ops-2-t">KR 1.2: Figma User Flow / Wireframe 與 Jira User Story 準時驗收</strong></td>
-                  <td>35%</td>
-                  <td id="kr-ops-2-pri">UI/UX 設計組</td>
-                  <td id="kr-ops-2-sec">後端研發組</td>
-                  <td><input type="text" id="kr-ops-2-val" value="Sprint 4 雙週評審會 100% 簽核通過"></td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- 右側甘特圖時間軸 -->
+          <div class="gantt-timeline" id="ganttTimeline">
+            <div class="timeline-hdr" id="timelineHeader"></div>
+            <div class="timeline-bdy" id="timelineRows"></div>
           </div>
         </div>
       </div>
 
-      <!-- Panel 3: 40% Compliance & Risk Control -->
-      <div id="view-biz" class="panel-view">
-        <div class="panel-tabs">
-          <button class="tab-btn active" id="tab-biz-budget" onclick="switchSubTab('biz', 'budget')">🛡️ 跨國清算對接與風控監控表</button>
-          <button class="tab-btn" id="tab-biz-okr" onclick="switchSubTab('biz', 'okr')">📑 對齊 40% 風控合規 OKR</button>
-        </div>
-        <div id="biz-sub-budget" class="tab-content active">
-          <div class="panel-action-bar">
-            <div>
-              <span style="font-size:13px; font-weight:700; color:#6554c0;" id="txt-biz-action-title">🛡️ 40% 跨國清算通道與 KYC/AML 風控把關</span>
-              <span style="font-size:12px; color:var(--jira-text-muted); margin-left:6px;" id="txt-biz-action-sub">
-                在此編輯或新增項目，將自動掛載 <strong>[40% 風控 (O2)]</strong>；任一通道拒付爭議率 &gt; 0.15% 將直接在甘特圖進度條亮起紅色 Flag 預警！
-              </span>
+      <!-- 視圖 2: Jira 敏捷看板 (點開直接編輯) -->
+      <div id="view-board" class="panel-view">
+        <div class="jira-board-container">
+          
+          <!-- BACKLOG -->
+          <div class="jira-column">
+            <div class="column-header col-backlog">
+              <span>BACKLOG (待辦)</span>
+              <span class="column-count" id="count-backlog">0</span>
             </div>
-            <button class="btn" style="background:#6554c0;" id="btn-biz-add" onclick="addBudgetItemPrompt()">＋ 新增清算/風控對接項目</button>
-          </div>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th id="th-biz-name">支付清算 / 風控檢驗模組</th>
-                  <th id="th-biz-pri">主責任單位</th>
-                  <th id="th-biz-sec">次責任單位</th>
-                  <th id="th-biz-budget">清算渠道月交易量 (USD)</th>
-                  <th id="th-biz-cost">爭議扣款損益 (USD)</th>
-                  <th id="th-biz-profit">淨清算利潤 (USD)</th>
-                  <th style="min-width: 270px;" id="th-biz-margin">拒付率 (Chargeback Rate) 狀態監控</th>
-                  <th id="th-biz-stage">合規驗證階段</th>
-                  <th id="th-biz-action">操作</th>
-                </tr>
-              </thead>
-              <tbody id="bizTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div id="biz-sub-okr" class="tab-content">
-          <div class="table-card" style="padding: 16px;">
-            <h3 style="color: #6554c0; margin-bottom: 10px;" id="txt-biz-okr-m-title">🛡️ 對齊 40% 跨國金融合規與清算對接 OKR 指標矩陣</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th id="th-biz-okr-kr">對齊 OKR 關鍵成果</th>
-                  <th id="th-biz-okr-wt">權重</th>
-                  <th id="th-biz-okr-pri">主責單位</th>
-                  <th id="th-biz-okr-sec">次責單位</th>
-                  <th id="th-biz-okr-val">指標數值審查</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong id="kr-biz-1-t">KR 2.1: 信用卡跨國支付拒付爭議率嚴守 ≤ 0.15% 底線</strong></td>
-                  <td>40%</td>
-                  <td id="kr-biz-1-pri">風控算法組</td>
-                  <td id="kr-biz-1-sec">支付清算 PM</td>
-                  <td><input id="okr-actual-margin" type="text" value="系統計算中..." readonly style="font-weight:700; color:#bf2600;"></td>
-                </tr>
-                <tr>
-                  <td><strong id="kr-biz-2-t">KR 2.2: Python/SQL 營運智慧控制台與 Notion 知識庫 100% 上線</strong></td>
-                  <td>30%</td>
-                  <td id="kr-biz-2-pri">數據分析 PM</td>
-                  <td id="kr-biz-2-sec">財務對賬組</td>
-                  <td><input type="text" id="kr-biz-2-val" value="自動化監控成功率與日清算報表已部署"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel 4: SAMR 面板 -->
-      <div id="view-samr" class="panel-view">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-          <div>
-            <h3 style="font-size:15px; font-weight:700;" id="txt-samr-title">🗣️ 跨部門溝通決策台 (SAMR 框架)</h3>
-            <p style="font-size:12px; color:var(--jira-text-muted);" id="txt-samr-sub">編輯 Sprint 與風控開會結果將「動態連動」至甘特圖對應的任務 Pipeline 註釋</p>
-          </div>
-          <button class="btn" id="btn-samr-add" onclick="addNewSAMRRecord()">＋ 新增會議紀錄</button>
-        </div>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th style="width: 160px;" id="th-samr-pipeline">連動任務 Pipeline</th>
-                <th style="width: 150px;" id="th-samr-depts">開會跨部門對口</th>
-                <th id="th-samr-sum">會議共識 (Summary)</th>
-                <th id="th-samr-act">行動指針 (Action Item)</th>
-                <th id="th-samr-res">可衡量結果 (Measurable Result)</th>
-                <th style="width: 60px;" id="th-samr-op">操作</th>
-              </tr>
-            </thead>
-            <tbody id="samrTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Panel 5: 客戶交付結報 -->
-      <div id="view-report" class="panel-view">
-        <div class="report-card-container">
-          <div class="report-subbar">
-            <div>
-              <h2 id="rep-head-title" style="font-size:18px; font-weight:800; color:#091e42;">法幣信用卡產品營運與交付報告 (Executive Briefing)</h2>
-              <span id="rep-head-sub" style="font-size:12px; color:var(--jira-text-muted);">80% 高階圖表視覺化 ＋ 20% 精煉決策與成果說明</span>
-            </div>
-            <div style="display:flex; gap:10px; align-items:center;">
-              <button class="btn" style="background:#0747a6;" onclick="window.print()">🖨️ Print / PDF</button>
+            <div class="column-cards-body" id="col-backlog" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'backlog')"></div>
+            <div class="column-footer">
+              <button class="btn-add-issue" onclick="quickAdd('backlog')">＋ 新增待辦 Issue</button>
             </div>
           </div>
 
-          <div class="kpi-row">
-            <div class="kpi-card kpi-blue">
-              <div class="kpi-title" id="rep-kpi-1-t">總體研發交付進度 (PIP)</div>
-              <div class="kpi-value" id="rep-kpi-1-v">84%</div>
-              <div class="kpi-hint" style="color:#0052cc;" id="rep-kpi-1-h">加權：60%產研 + 40%風控</div>
+          <!-- DEV -->
+          <div class="jira-column">
+            <div class="column-header col-dev">
+              <span>DEV (研發中)</span>
+              <span class="column-count" id="count-dev">0</span>
             </div>
-            <div class="kpi-card kpi-green">
-              <div class="kpi-title" id="rep-kpi-2-t">拒付爭議率 (Chargeback)</div>
-              <div class="kpi-value" id="rep-kpi-2-v">0.18%</div>
-              <div class="kpi-hint" style="color:#bf2600; font-weight:700;" id="rep-kpi-2-h">⚠️ 高於 OKR 底線 (≤0.15%)</div>
-            </div>
-            <div class="kpi-card kpi-purple">
-              <div class="kpi-title" id="rep-kpi-3-t">客訴爭議降解幅度</div>
-              <div class="kpi-value" id="rep-kpi-3-v">-22.4%</div>
-              <div class="kpi-hint" style="color:#6554c0;" id="rep-kpi-3-h">達標 OKR 關鍵成果 (≥20%)</div>
-            </div>
-            <div class="kpi-card kpi-yellow">
-              <div class="kpi-title" id="rep-kpi-4-t">交易成功率 (Auth Rate)</div>
-              <div class="kpi-value" id="rep-kpi-4-v">98.6%</div>
-              <div class="kpi-hint" style="color:#006644;" id="rep-kpi-4-h">優於行業標竿基準</div>
+            <div class="column-cards-body" id="col-dev" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'dev')"></div>
+            <div class="column-footer">
+              <button class="btn-add-issue" onclick="quickAdd('dev')">＋ 新增研發 Issue</button>
             </div>
           </div>
 
-          <div class="chart-dual-row">
-            <div class="chart-box">
-              <h4 id="rep-chart-pipe-t">📈 核心支付模組推進狀態 (Payment Timeline Pipelines)</h4>
-              <div class="pipe-group" id="reportPipelineList"></div>
+          <!-- TEST -->
+          <div class="jira-column">
+            <div class="column-header col-test">
+              <span>TEST (測試/驗收)</span>
+              <span class="column-count" id="count-test">0</span>
             </div>
-
-            <div class="chart-box">
-              <h4 id="rep-chart-donut-t">💳 交易處理量與清算通道配置 (Volume Allocation)</h4>
-              <div class="donut-layout">
-                <svg class="donut-svg" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#dfe1e6" stroke-width="4"></circle>
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#0052cc" stroke-width="4" stroke-dasharray="40 60" stroke-dashoffset="0"></circle>
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#36b37e" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="-40"></circle>
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#ffab00" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-65"></circle>
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#6554c0" stroke-width="4" stroke-dasharray="15 85" stroke-dashoffset="-85"></circle>
-                </svg>
-                <div class="donut-legend">
-                  <div class="legend-row"><div class="dot-chip" style="background:#0052cc;"></div><span id="rep-leg-1">Visa/Mastercard (40%)</span></div>
-                  <div class="legend-row"><div class="dot-chip" style="background:#36b37e;"></div><span id="rep-leg-2">跨國法幣清算通道 (25%)</span></div>
-                  <div class="legend-row"><div class="dot-chip" style="background:#ffab00;"></div><span id="rep-leg-3">本地錢包/ACH (20%)</span></div>
-                  <div class="legend-row"><div class="dot-chip" style="background:#6554c0;"></div><span id="rep-leg-4">風控備用通道 (15%)</span></div>
-                </div>
-              </div>
+            <div class="column-cards-body" id="col-test" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'test')"></div>
+            <div class="column-footer">
+              <button class="btn-add-issue" onclick="quickAdd('test')">＋ 新增測試 Issue</button>
             </div>
           </div>
 
-          <div class="text-aux-section">
-            <h4 id="rep-text-sec-t" style="font-size:13px; font-weight:700; color:#091e42; margin-bottom:10px;">📝 核心執行成果與跨部門決策摘要 (Executive Takeaways & SAMR)</h4>
-            <div class="text-aux-grid">
-              <div class="text-aux-card">
-                <strong id="rep-card-1-t">🎯 60% 產研交付與體驗優化成果</strong>
-                <span id="rep-card-1-c">透過 Figma 精確梳理綁卡與支付失敗提示流，配合 Jira Epic 敏捷拆解，使客訴爭議升級率顯著下降 22.4%，跨國轉化率提升 14.8%。</span>
-              </div>
-              <div class="text-aux-card">
-                <strong id="rep-card-2-t">🛡️ 40% 風控合規與數據控制台成果</strong>
-                <span id="rep-card-2-c">自主運用 Python/SQL 打造智慧控制台並對齊 Notion SOP。針對特定高風險卡段觸發 24H 緊急機制，確保拒付率受控於 0.15% 安全門檻之內。</span>
-              </div>
+          <!-- PUBLISH -->
+          <div class="jira-column">
+            <div class="column-header col-publish">
+              <span>PUBLISH (已發版)</span>
+              <span class="column-count" id="count-publish">0</span>
             </div>
-
-            <table style="background:#fff;">
-              <thead>
-                <tr>
-                  <th style="width:22%;" id="rep-th-1">連動任務模組</th>
-                  <th style="width:25%;" id="rep-th-2">會議共識 (Summary)</th>
-                  <th style="width:25%;" id="rep-th-3">具體行動 (Action Item)</th>
-                  <th style="width:28%;" id="rep-th-4">可衡量成果 (Measurable Result)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong id="rep-row1-mod">綁卡與支付失敗引導優化</strong></td>
-                  <td id="rep-row1-sum">用戶遭遇 3DS 驗證失敗無明確指引，產生客訴。</td>
-                  <td id="rep-row1-act">前台增設即時錯誤代碼解析與換卡建議。</td>
-                  <td><span style="color:#006644; font-weight:700;" id="rep-row1-res">爭議案件下降 22.4%，綁卡成功率達 92%。</span></td>
-                </tr>
-                <tr>
-                  <td><strong id="rep-row2-mod">跨國法幣清算 (Settlement) 對接</strong></td>
-                  <td id="rep-row2-sum">跨國匯率波動影響 T+1 清算對賬準確性。</td>
-                  <td id="rep-row2-act">工程團隊增設實時鎖匯 API 與自動平帳腳本。</td>
-                  <td><span style="color:#006644; font-weight:700;" id="rep-row2-res">自動對賬率 100%，消除人工平帳時間浪費。</span></td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="column-cards-body" id="col-publish" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'publish')"></div>
+            <div class="column-footer">
+              <button class="btn-add-issue" onclick="quickAdd('publish')">＋ 新增發版 Issue</button>
+            </div>
           </div>
 
         </div>
@@ -797,845 +270,142 @@
     </div>
   </div>
 
-  <!-- 8 色調色盤 -->
-  <div id="palettePopover" class="palette-popover"></div>
+  <!-- 點擊卡片彈出的手動編輯視窗 (Modal) -->
+  <div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">編輯 Issue 任務</h3>
+        <button class="modal-close" onclick="closeEditModal()">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>任務名稱 (Task Title)</label>
+        <input type="text" id="modalTaskName">
+      </div>
+
+      <div class="form-group">
+        <label>Pipeline 階層類型</label>
+        <select id="modalTaskLevel" onchange="toggleParentSelect()">
+          <option value="main">主要 PIPELINE (Main Pipeline / Epic)</option>
+          <option value="sub">子 PIPELINE (Sub Pipeline / Story)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="parentSelectGroup">
+        <label>所屬主要 Pipeline</label>
+        <select id="modalParentId"></select>
+      </div>
+
+      <div class="form-group">
+        <label>主責任人 / 單位</label>
+        <input type="text" id="modalAssignee">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Jira 看板狀態</label>
+          <select id="modalStatus">
+            <option value="backlog">BACKLOG (待辦)</option>
+            <option value="dev">DEV (研發中)</option>
+            <option value="test">TEST (測試/驗收)</option>
+            <option value="publish">PUBLISH (已發版)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>進度 (%)</label>
+          <input type="number" id="modalProgress" min="0" max="100">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" style="background:#dfe1e6; color:#172b4d;" onclick="closeEditModal()">取消</button>
+        <button class="btn" onclick="saveModalEdit()">儲存變更</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const WEEKS_COUNT = 8;
-    let currentCellWidth = 100;
-    let currentTreeWidth = 580;
-    let currentLang = 'zh';
-
-    const JIRA_COLORS = [
-      "#0052cc", "#36b37e", "#6554c0", "#ff8b00",
-      "#172b4d", "#e5493a", "#00a3bf", "#403294"
-    ];
-
-    // 任務資料庫：新增 jiraStatus 屬性（backlog, dev, test, publish）以連動 Jira 敏捷看板
-    let tasks = [
-      { id: 1, key: "PAY-101", name: "法幣信用卡 User Flow 與 Figma Wireframe 交付", primary: "產品 PM (陳虹汝)", secondary: "UI/UX 設計組", type: "ops", color: "#0052cc", start: 0, duration: 1.8, progress: 100, criteria: "完成全場景 User Flow 與 Wireframe 確版", jiraStatus: "publish" },
-      { id: 2, key: "PAY-102", name: "開卡/充值/風控檢驗 Jira Epics 與 Stories 拆解", primary: "產品 PM (陳虹汝)", secondary: "後端架構組", type: "ops", color: "#00a3bf", start: 1.2, duration: 2.0, progress: 90, criteria: "建立驗收條件 (AC)，Sprint 待辦清單排定", jiraStatus: "test" },
-      { id: 3, key: "PAY-103", name: "信用卡綁卡流程與失敗引導優化 (降解客訴 20%)", primary: "前台產品組", secondary: "客服運營組", type: "ops", color: "#36b37e", start: 2.8, duration: 2.2, progress: 80, criteria: "客訴爭議案件減少 ≥ 20%，轉化率提升", jiraStatus: "dev" },
-      { id: 4, key: "PAY-104", name: "敏捷開發推進：主持 Sprint Planning 與 Daily Standup", primary: "Scrum PM", secondary: "研發/測試團隊", type: "ops", color: "#e5493a", start: 0, duration: 6.5, progress: 85, criteria: "維持兩週一疊代，準時發版率 ≥ 95%", jiraStatus: "dev" },
-      { id: 5, key: "PAY-201", name: "跨國法幣清算 (Settlement) 與財務對賬流水對接", primary: "支付通道夥伴", secondary: "財務技術組", type: "biz", color: "#6554c0", start: 1.5, duration: 2.5, progress: 75, budget: 1500000, cost: 2700, stage: "第二階段 (UAT)", jiraStatus: "test" },
-      { id: 6, key: "PAY-202", name: "多國 KYC/AML 金融風控監管規則庫部署", primary: "法務合規組", secondary: "風控研發組", type: "biz", color: "#403294", start: 0.8, duration: 2.0, progress: 95, budget: 800000, cost: 800, stage: "已上線驗收", jiraStatus: "publish" },
-      { id: 7, key: "PAY-203", name: "Python / SQL 法幣信用卡營運智慧控制台開發", primary: "產品 PM (自主開發)", secondary: "數據團隊", type: "biz", color: "#172b4d", start: 2.5, duration: 2.2, progress: 85, budget: 500000, cost: 450, stage: "維護迭代", jiraStatus: "dev" },
-      { id: 8, key: "PAY-204", name: "Notion 跨國產品 SOP 與營運知識庫 (KB) 建立", primary: "運營產品組", secondary: "客服主管", type: "biz", color: "#36b37e", start: 4.2, duration: 2.0, progress: 0, budget: 0, cost: 0, stage: "全員培訓", jiraStatus: "backlog" }
-    ];
-
-    let samrRecords = [
-      {
-        id: 1,
-        taskId: 3,
-        departments: "前台產品 × 終端客服 × 風控工程",
-        summary: "用戶於 3DS 授權逾時回傳模糊錯誤碼，引發客服進線激增 35%。",
-        action: "前台於 48 小時內部署即時指引彈窗，並整合風控白名單重試邏輯。",
-        result: "客訴爭議案件自次週起顯著下降 22.4%，達到預期目標。"
-      },
-      {
-        id: 2,
-        taskId: 5,
-        departments: "支付 Channel × 財務團隊 × 清算 PM",
-        summary: "跨國特定卡段 Chargeback 爭議率達 0.18%（超過 0.15% 紅線）。",
-        action: "立即召開 24H 緊急風控清算會議，啟動 CVV/3DS 雙重驗證規則攔截。",
-        result: "高危交易攔截率達 99.4%，預期 5 個工作日內將爭議率壓回 0.12%。"
-      },
-      {
-        id: 3,
-        taskId: 7,
-        departments: "產品 PM × 數據工程 × 營運組",
-        summary: "各國支付成功率人工對賬耗時過長，缺乏即時異常通報機制。",
-        action: "自主運用 Python/SQL 串接 API，打造自動化即時監控儀表板。",
-        result: "每日對賬效率提升 80%，異常波動自動觸發 Slack 即時通知。"
-      }
-    ];
-
-    let currentActiveColorTaskId = null;
-    let isGlobalRiskBreached = false;
+    const CELL_WIDTH = 95;
+    let currentTreeWidth = 480;
+    let editingTaskId = null;
     let draggedTaskId = null;
 
+    // 核心資料庫：主次階層清晰劃分 (Main Pipeline 與 Sub Pipeline)
+    let pipelines = [
+      // 主要 PIPELINE 1
+      { id: 100, isMain: true, key: "EPIC-01", name: "💳 信用卡綁卡與體驗升級 (UX 降解 20% 爭議)", primary: "產品 PM (陳虹汝)", start: 0, duration: 4.5, status: "dev", progress: 85 },
+      { id: 101, isMain: false, parentId: 100, key: "PAY-101", name: "Figma 交易 User Flow 與 Wireframe 繪製", primary: "UI/UX 設計組", start: 0, duration: 1.5, status: "publish", progress: 100 },
+      { id: 102, isMain: false, parentId: 100, key: "PAY-102", name: "綁卡與支付失敗清晰錯誤碼提示重構", primary: "前台產品組", start: 1.2, duration: 2.0, status: "test", progress: 90 },
+      { id: 103, isMain: false, parentId: 100, key: "PAY-103", name: "3DS 授權逾時回傳模糊引導優化", primary: "前端工程組", start: 2.5, duration: 1.8, status: "dev", progress: 60 },
+
+      // 主要 PIPELINE 2
+      { id: 200, isMain: true, key: "EPIC-02", name: "🌐 跨國法幣清算 (Settlement) 與通道對接", primary: "清算通道夥伴", start: 1.5, duration: 4.0, status: "dev", progress: 70 },
+      { id: 201, isMain: false, parentId: 200, key: "PAY-201", name: "跨國 T+1 清算對賬流水自動平帳腳本", primary: "後端研發組", start: 1.5, duration: 2.2, status: "test", progress: 80 },
+      { id: 202, isMain: false, parentId: 200, key: "PAY-202", name: "實時匯率鎖匯 API 對接", primary: "財務技術組", start: 3.0, duration: 1.8, status: "dev", progress: 50 },
+
+      // 主要 PIPELINE 3
+      { id: 300, isMain: true, key: "EPIC-03", name: "🛡️ 多國 KYC/AML 金融風控監管規則庫", primary: "法務合規組", start: 0.5, duration: 5.0, status: "dev", progress: 75 },
+      { id: 301, isMain: false, parentId: 300, key: "PAY-301", name: "Python / SQL 信用卡營運智慧儀表板", primary: "產品 PM (自主開發)", start: 2.0, duration: 2.2, status: "dev", progress: 70 },
+      { id: 302, isMain: false, parentId: 300, key: "PAY-302", name: "高危卡段 Chargeback 阻斷規則 (≤0.15%)", primary: "風控算法組", start: 3.5, duration: 1.8, status: "backlog", progress: 20 }
+    ];
+
     window.addEventListener("DOMContentLoaded", () => {
-      initPalettePopover();
-      initSplitterResizer();
-      renderAllViews();
+      initSplitter();
+      renderGantt();
+      renderBoard();
     });
 
-    function renderAllViews() {
-      renderBizTable();
-      renderOpsTable();
-      renderGantt();
-      renderJiraBoard();
-      renderSAMRTable();
-      renderReportPipeline();
-      updatePIP();
-    }
-
-    /* 子分頁切換：Roadmap 甘特圖 vs Jira 看板 */
-    function switchRoadmapSubTab(subTabKey) {
-      document.getElementById("tab-roadmap-gantt").classList.toggle("active", subTabKey === 'gantt');
-      document.getElementById("tab-roadmap-board").classList.toggle("active", subTabKey === 'board');
-      
-      document.getElementById("roadmap-sub-gantt").classList.toggle("active", subTabKey === 'gantt');
-      document.getElementById("roadmap-sub-board").classList.toggle("active", subTabKey === 'board');
-      
-      if (subTabKey === 'board') {
-        renderJiraBoard();
-      } else {
-        renderGantt();
-      }
+    /* 切換視圖 Tab */
+    function switchViewTab(tab) {
+      document.getElementById("btn-tab-gantt").classList.toggle("active", tab === 'gantt');
+      document.getElementById("btn-tab-board").classList.toggle("active", tab === 'board');
+      document.getElementById("view-gantt").classList.toggle("active", tab === 'gantt');
+      document.getElementById("view-board").classList.toggle("active", tab === 'board');
+      if (tab === 'gantt') renderGantt();
+      if (tab === 'board') renderBoard();
     }
 
     /* ========================================================
-       Jira 敏捷看板 (BACKLOG, DEV, TEST, PUBLISH) 渲染與拖曳邏輯
+       1. 甘特圖渲染 (主要 PIPELINE 與 SUB PIPELINE 階層化)
        ======================================================== */
-    function renderJiraBoard() {
-      const statuses = ['backlog', 'dev', 'test', 'publish'];
-      const counts = { backlog: 0, dev: 0, test: 0, publish: 0 };
-
-      // 清空各欄內容
-      statuses.forEach(status => {
-        const colBody = document.getElementById(`col-body-${status}`);
-        if (colBody) colBody.innerHTML = "";
-      });
-
-      tasks.forEach(task => {
-        const status = task.jiraStatus || 'backlog';
-        if (counts[status] !== undefined) counts[status]++;
-
-        const colBody = document.getElementById(`col-body-${status}`);
-        if (!colBody) return;
-
-        const isRiskItem = task.type === 'biz' && (Number(task.budget) > 0 && (Number(task.cost) / Number(task.budget) * 100 > 0.15));
-        const okrBadgeClass = task.type === 'biz' ? 'okr-badge-o2' : 'okr-badge-o1';
-        const okrBadgeText = task.type === 'biz' ? (currentLang==='zh'?'40% 風控':'40% Risk') : (currentLang==='zh'?'60% 產研':'60% Ops');
-
-        const card = document.createElement("div");
-        card.className = "jira-card";
-        card.setAttribute("draggable", "true");
-        card.ondragstart = (e) => handleDragStart(e, task.id);
-        card.ondragend = handleDragEnd;
-
-        card.innerHTML = `
-          <div class="jira-card-header">
-            <span class="okr-type-badge ${okrBadgeClass}">${okrBadgeText}</span>
-            <span style="color:#de350b; font-size:11px; cursor:pointer;" onclick="deleteTaskDirect(${task.id})" title="Delete">✕</span>
-          </div>
-          <div class="jira-card-title" ondblclick="editTaskName(${task.id})" title="${currentLang==='zh'?'雙擊改名':'Double click to rename'}">
-            ${task.name}
-          </div>
-          ${isRiskItem ? `<div style="color:#bf2600; font-size:10px; font-weight:800;">🚩 Chargeback > 0.15%</div>` : ''}
-          <div class="jira-card-meta">
-            <span class="jira-issue-key">${task.key || 'PAY-' + task.id}</span>
-            <span class="jira-assignee">${task.primary.split(' ')[0]}</span>
-          </div>
-        `;
-        colBody.appendChild(card);
-      });
-
-      // 更新各欄計數標籤
-      statuses.forEach(status => {
-        const countEl = document.getElementById(`count-${status}`);
-        if (countEl) countEl.textContent = counts[status];
-      });
-    }
-
-    /* Drag & Drop 事件處理 */
-    function handleDragStart(e, taskId) {
-      draggedTaskId = taskId;
-      e.dataTransfer.setData("text/plain", taskId);
-      e.dataTransfer.effectAllowed = "move";
-    }
-
-    function handleDragEnd(e) {
-      draggedTaskId = null;
-      document.querySelectorAll(".column-cards-body").forEach(el => el.classList.remove("dragover"));
-    }
-
-    function handleDragOver(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-      e.currentTarget.classList.add("dragover");
-    }
-
-    function handleDragLeave(e) {
-      e.currentTarget.classList.remove("dragover");
-    }
-
-    function handleDrop(e, targetStatus) {
-      e.preventDefault();
-      e.currentTarget.classList.remove("dragover");
-      
-      const id = Number(e.dataTransfer.getData("text/plain")) || draggedTaskId;
-      const task = tasks.find(t => t.id === id);
-      if (task) {
-        task.jiraStatus = targetStatus;
-        // 拖曳至不同看板狀態時，連動調整進度百分比
-        if (targetStatus === 'publish') task.progress = 100;
-        else if (targetStatus === 'backlog') task.progress = 0;
-        else if (targetStatus === 'test' && task.progress < 80) task.progress = 85;
-        else if (targetStatus === 'dev' && (task.progress === 0 || task.progress === 100)) task.progress = 50;
-        
-        renderAllViews();
-      }
-    }
-
-    function createNewIssue(targetStatus) {
-      const name = prompt(currentLang==='zh'?"請輸入新 Issue 名稱：":"Enter Issue Name:", "新支付功能需求");
-      if (!name) return;
-      const isBiz = confirm(currentLang==='zh'
-        ? "選擇歸屬 OKR 目標：\n[確定] = 40% 跨國清算與風控合規 (Objective 2)\n[取消] = 60% 支付體驗與產研交付 (Objective 1)"
-        : "Select OKR:\n[OK] = 40% Risk & Settlement\n[Cancel] = 60% Payment UX");
-
-      const newTask = {
-        id: Date.now(),
-        key: "PAY-" + Math.floor(100 + Math.random() * 900),
-        name,
-        primary: "產品 PM (陳虹汝)",
-        secondary: isBiz ? "風控清算組" : "前端研發組",
-        type: isBiz ? "biz" : "ops",
-        color: JIRA_COLORS[Math.floor(Math.random() * JIRA_COLORS.length)],
-        start: 2.0,
-        duration: 2.0,
-        progress: targetStatus === 'publish' ? 100 : (targetStatus === 'dev' ? 50 : 0),
-        jiraStatus: targetStatus,
-        budget: isBiz ? 200000 : 0,
-        cost: isBiz ? 200 : 0,
-        stage: "第一階段 (開發對接)"
-      };
-
-      tasks.push(newTask);
-      renderAllViews();
-    }
-
-    /* 左右分界線伸縮 */
-    function initSplitterResizer() {
-      const resizer = document.getElementById("splitterResizer");
-      resizer.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        resizer.classList.add("resizing");
-        document.body.style.cursor = "col-resize";
-        document.body.style.userSelect = "none";
-
-        const startX = e.clientX;
-        const initialWidth = currentTreeWidth;
-
-        function onMouseMove(moveEvent) {
-          const delta = moveEvent.clientX - startX;
-          const newWidth = Math.min(850, Math.max(380, initialWidth + delta));
-          currentTreeWidth = newWidth;
-          document.documentElement.style.setProperty("--tree-w", `${newWidth}px`);
-        }
-
-        function onMouseUp() {
-          resizer.classList.remove("resizing");
-          document.body.style.cursor = "default";
-          document.body.style.userSelect = "auto";
-          window.removeEventListener("mousemove", onMouseMove);
-          window.removeEventListener("mouseup", onMouseUp);
-        }
-
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-      });
-    }
-
-    function zoomTimeline(delta) {
-      currentCellWidth = Math.min(160, Math.max(70, currentCellWidth + delta));
-      document.documentElement.style.setProperty("--cell-w", `${currentCellWidth}px`);
-      renderGantt();
-    }
-
-    /* 全局雙語系字典 */
-    const globalDict = {
-      zh: {
-        navCore: "產品核心面板",
-        navRoadmap: "📊 產品迭代時程 (Roadmap)",
-        navOps: "🎯 60% 支付產品與體驗優化",
-        navBiz: "🛡️ 40% 風控合規與清算監控",
-        navCollab: "跨部門協作決策",
-        navSamr: "🗣️ 跨部門開會 SAMR",
-        navSamrBadge: "決策連動",
-        navClient: "營運數據與結報",
-        navReport: "📄 產品交付營運報告 (Report)",
-        pageTitleRoadmap: "產品迭代時程 (Roadmap 甘特圖)",
-        pageTitleOps: "🎯 60% 支付功能研發與用戶體驗推進",
-        pageTitleBiz: "🛡️ 40% 跨國清算對接與 KYC/AML 風控把關",
-        pageTitleSamr: "🗣️ 跨部門溝通決策台 (Summary - Action - Measurable Result)",
-        pageTitleReport: "📄 法幣信用卡產品營運與交付報告 (Executive Briefing)",
-        okrTag: "團隊 OKR 目標常駐",
-        okrSub: "法幣信用卡支付雙核指標：極致用戶體驗 ＋ 金融風控（可直接修改）",
-        okrLocked: "實時監控鎖定",
-        okrO1T: "🎯 60% 支付體驗與產研敏捷交付 (Objective 1)",
-        okrO1Metric: "爭議降解 ≥ 20% | 成功率 ≥ 98%",
-        okrO2T: "🛡️ 40% 跨國清算與 KYC/AML 風控把關 (Objective 2)",
-        zoomLabel: "週寬縮放:",
-        topAddBtn: "＋ 新增 Epic / Task",
-        pipTitle: "產品健康進度 (PIP)",
-        treeHeader: "產品模組 Pipeline (對齊 OKR 屬性 + 動態告警)",
-        alertMsg: "【風控拒付率失守警報】監控到信用卡 Chargeback 爭議率達 <strong id='alert-bar-margin-val'>0.18%</strong>（高於 0.15% OKR 風險紅線）！已向「風控合約組 / 清算通道」觸發告警。",
-        alertBtn: "🚨 24 小時內召開緊急風控清算會議",
-        tabGantt: "📊 Roadmap (甘特圖)",
-        tabBoard: "📋 Jira 敏捷看板 (Board: Backlog / Dev / Test / Publish)",
-        boardTipTitle: "⚡ Jira 敏捷看板工作流 (可直接拖曳卡片或編輯)",
-        boardTipSub: "支援按住卡片在不同狀態欄拖拉流轉，雙擊卡片名稱可改名，狀態變更將即時同步更新甘特圖與進度指標。",
-        colBacklog: "BACKLOG (需求待辦)",
-        colDev: "DEV (研發與對接)",
-        colTest: "TEST (測試與風控驗收)",
-        colPublish: "PUBLISH (已發版 / 上線)",
-        createIssue: "建立 Issue",
-        tabOpsSch: "📋 支付功能研發與 UX 交付清單",
-        tabOpsOkr: "🎯 對齊 60% 支付體驗 OKR",
-        opsActionTitle: "🎯 60% 法幣信用卡產品研發與體驗推進",
-        opsActionSub: "在此編輯或新增項目，將自動掛載 <strong>[60% 產研 (O1)]</strong> 並即時同步至甘特圖時程矩陣與 Jira 看板。",
-        opsAddBtn: "＋ 新增產研功能項目",
-        tabBizBud: "🛡️ 跨國清算對接與風控監控表",
-        tabBizOkr: "📑 對齊 40% 風控合規 OKR",
-        bizActionTitle: "🛡️ 40% 跨國清算通道與 KYC/AML 風控把關",
-        bizActionSub: "在此編輯或新增項目，將自動掛載 <strong>[40% 風控 (O2)]</strong>；任一通道拒付爭議率 > 0.15% 將直接在甘特圖進度條亮起紅色 Flag 預警！",
-        bizAddBtn: "＋ 新增清算/風控對接項目",
-        samrTitle: "🗣️ 跨部門溝通決策台 (SAMR 框架)",
-        samrSub: "編輯 Sprint 與風控開會結果將「動態連動」至甘特圖對應的任務 Pipeline 註釋",
-        samrAddBtn: "＋ 新增會議紀錄",
-        repTitle: "法幣信用卡產品營運與交付報告 (Executive Briefing)",
-        repSub: "80% 高階圖表視覺化 ＋ 20% 精煉決策與成果說明",
-        repKpi1T: "總體研發交付進度 (PIP)", repKpi1H: "加權：60%產研 + 40%風控",
-        repKpi2T: "拒付爭議率 (Chargeback)", repKpi2H: "⚠️ 高於 OKR 底線 (≤0.15%)",
-        repKpi3T: "客訴爭議降解幅度", repKpi3H: "達標 OKR 關鍵成果 (≥20%)",
-        repKpi4T: "交易成功率 (Auth Rate)", repKpi4H: "優於行業標竿基準",
-        repChartPipeT: "📈 核心支付模組推進狀態 (Payment Timeline Pipelines)",
-        repChartDonutT: "💳 交易處理量與清算通道配置 (Volume Allocation)",
-        repLeg1: "Visa/Mastercard (40%)", repLeg2: "跨國法幣清算通道 (25%)", repLeg3: "本地錢包/ACH (20%)", repLeg4: "風控備用通道 (15%)",
-        repTextSecT: "📝 核心執行成果與跨部門決策摘要 (Executive Takeaways & SAMR)",
-        repCard1T: "🎯 60% 產研交付與體驗優化成果",
-        repCard1C: "透過 Figma 精確梳理綁卡與支付失敗提示流，配合 Jira Epic 敏捷拆解，使客訴爭議升級率顯著下降 22.4%，跨國轉化率提升 14.8%。",
-        repCard2T: "🛡️ 40% 風控合規與數據控制台成果",
-        repCard2C: "自主運用 Python/SQL 打造智慧控制台並對齊 Notion SOP。針對特定高風險卡段觸發 24H 緊急機制，確保拒付率受控於 0.15% 安全門檻之內。"
-      },
-      en: {
-        navCore: "PRODUCT WORKSPACES",
-        navRoadmap: "📊 Product Roadmap (Gantt)",
-        navOps: "🎯 60% Payment UX & Delivery",
-        navBiz: "🛡️ 40% Settlement & Risk Control",
-        navCollab: "CROSS-TEAM DECISIONS",
-        navSamr: "🗣️ Cross-Team SAMR Hub",
-        navSamrBadge: "Sync Active",
-        navClient: "OPERATIONS & BRIEFING",
-        navReport: "📄 Executive Status Briefing",
-        pageTitleRoadmap: "Fiat & Card Roadmap (Jira Gantt)",
-        pageTitleOps: "🎯 60% Payment Features & User Experience Pipeline",
-        pageTitleBiz: "🛡️ 40% Cross-Border Settlement & Risk Compliance",
-        pageTitleSamr: "🗣️ Cross-Functional Decision Hub (SAMR Framework)",
-        pageTitleReport: "📄 Executive Product & Operations Briefing",
-        okrTag: "PRODUCT OKR ACTIVE",
-        okrSub: "Dual Engine: Flawless Payment UX & Stringent Risk Compliance (Click to Edit)",
-        okrLocked: "Real-time Monitoring",
-        okrO1T: "🎯 60% UX & Agile Feature Delivery (Objective 1)",
-        okrO1Metric: "Disputes -20% | Auth Rate ≥ 98%",
-        okrO2T: "🛡️ 40% Settlement & Risk Compliance (Objective 2)",
-        zoomLabel: "Week Zoom:",
-        topAddBtn: "＋ New Epic / Task",
-        pipTitle: "Product Health (PIP)",
-        treeHeader: "Feature Pipelines (Aligned to OKR + Dynamic Alerts)",
-        alertMsg: "【CHARGEBACK BREACH ALERT】Credit card chargeback rate reached <strong id='alert-bar-margin-val'>0.18%</strong> (> 0.15% OKR Threshold)! Risk alerts dispatched to Compliance & Channel Leads.",
-        alertBtn: "🚨 Convene 24-Hr Risk & Settlement Meeting",
-        tabGantt: "📊 Roadmap (Gantt)",
-        tabBoard: "📋 Jira Agile Board (Backlog / Dev / Test / Publish)",
-        boardTipTitle: "⚡ Jira Agile Workflow Board (Drag & Drop or Edit Directly)",
-        boardTipSub: "Drag and drop cards across columns. Double-click to rename. Changes dynamically sync to the Gantt chart and PIP metrics.",
-        colBacklog: "BACKLOG",
-        colDev: "DEV (In Development)",
-        colTest: "TEST (QA & Risk Review)",
-        colPublish: "PUBLISH (Released / Live)",
-        createIssue: "Create Issue",
-        tabOpsSch: "📋 Payment Features & UX Delivery Checklist",
-        tabOpsOkr: "🎯 Align 60% Payment Experience OKRs",
-        opsActionTitle: "🎯 60% Payment UX & Agile Delivery Pipeline",
-        opsActionSub: "Items created here are tagged <strong>[60% Ops (O1)]</strong> and rendered on the Roadmap and Board.",
-        opsAddBtn: "＋ New Feature Item",
-        tabBizBud: "🛡️ Settlement Channels & Risk Compliance Matrix",
-        tabBizOkr: "📑 Align 40% Compliance OKRs",
-        bizActionTitle: "🛡️ 40% Settlement & KYC/AML Risk Control",
-        bizActionSub: "Items created here are tagged <strong>[40% Risk (O2)]</strong>; any channel chargeback > 0.15% directly triggers a Red Flag on the Gantt progress bar!",
-        bizAddBtn: "＋ New Settlement/Risk Item",
-        samrTitle: "🗣️ Cross-Team Decision Hub (SAMR Framework)",
-        samrSub: "Sprint reviews and risk decisions dynamically link to pipeline annotations.",
-        samrAddBtn: "＋ New Meeting Record",
-        repTitle: "Fiat & Card Executive Status Report",
-        repSub: "80% High-Density Visual Dashboards + 20% Concise Decision Summaries",
-        repKpi1T: "Delivery Progress (PIP)", repKpi1H: "Weighted: 60% Ops + 40% Risk",
-        repKpi2T: "Chargeback Dispute Rate", repKpi2H: "⚠️ Above OKR Threshold (≤0.15%)",
-        repKpi3T: "Support Dispute Reduction", repKpi3H: "Target Achieved (≥20%)",
-        repKpi4T: "Transaction Auth Rate", repKpi4H: "Outperforms Benchmark",
-        repChartPipeT: "📈 Core Payment Pipeline Delivery Status",
-        repChartDonutT: "💳 Transaction Volume Allocation",
-        repLeg1: "Visa/Mastercard (40%)", repLeg2: "Cross-border Settlement (25%)", repLeg3: "Local Wallets/ACH (20%)", repLeg4: "Risk Fallback Channel (15%)",
-        repTextSecT: "📝 Executive Key Takeaways & SAMR Decision Matrix",
-        repCard1T: "🎯 60% Delivery & UX Optimization",
-        repCard1C: "Refined card-binding and error-prompt flows via Figma and Jira user stories, reducing CS dispute escalation by 22.4% and improving checkout conversion by 14.8%.",
-        repCard2T: "🛡️ 40% Compliance & Operations Dashboard",
-        repCard2C: "Engineered Python/SQL analytics dashboard aligned with Notion SOPs. Rapid response to high-risk BINs keeps chargebacks safely contained under 0.15%."
-      }
-    };
-
-    function setGlobalLanguage(lang) {
-      currentLang = lang;
-      const d = globalDict[lang];
-
-      document.getElementById("btn-global-zh").classList.toggle("active", lang === 'zh');
-      document.getElementById("btn-global-en").classList.toggle("active", lang === 'en');
-
-      document.getElementById("nav-lbl-core").textContent = d.navCore;
-      document.getElementById("nav-item-roadmap").textContent = d.navRoadmap;
-      document.getElementById("nav-item-ops").textContent = d.navOps;
-      document.getElementById("nav-item-biz").textContent = d.navBiz;
-      document.getElementById("nav-lbl-collab").textContent = d.navCollab;
-      document.getElementById("nav-item-samr").textContent = d.navSamr;
-      document.getElementById("nav-badge-samr-txt").textContent = d.navSamrBadge;
-      document.getElementById("nav-lbl-client").textContent = d.navClient;
-      document.getElementById("nav-item-report").textContent = d.navReport;
-
-      document.getElementById("txt-okr-tag").textContent = d.okrTag;
-      document.getElementById("txt-okr-subtitle").textContent = d.okrSub;
-      document.getElementById("txt-okr-locked").textContent = d.okrLocked;
-      document.getElementById("txt-okr-o1-t").textContent = d.okrO1T;
-      document.getElementById("txt-okr-o1-metric").textContent = d.okrO1Metric;
-      document.getElementById("txt-okr-o2-t").textContent = d.okrO2T;
-      document.getElementById("txt-zoom-label").textContent = d.zoomLabel;
-      document.getElementById("btn-top-add").textContent = d.topAddBtn;
-      document.getElementById("txt-pip-title").textContent = d.pipTitle;
-
-      document.getElementById("tab-roadmap-gantt").textContent = d.tabGantt;
-      document.getElementById("tab-roadmap-board").textContent = d.tabBoard;
-      document.getElementById("txt-board-tip-title").textContent = d.boardTipTitle;
-      document.getElementById("txt-board-tip-sub").textContent = d.boardTipSub;
-      document.getElementById("lbl-col-backlog").textContent = d.colBacklog;
-      document.getElementById("lbl-col-dev").textContent = d.colDev;
-      document.getElementById("lbl-col-test").textContent = d.colTest;
-      document.getElementById("lbl-col-publish").textContent = d.colPublish;
-      document.querySelectorAll(".txt-create-issue").forEach(el => el.textContent = d.createIssue);
-
-      document.getElementById("txt-tree-header").textContent = d.treeHeader;
-      document.getElementById("txt-gantt-alert-msg").innerHTML = d.alertMsg;
-      document.getElementById("btn-gantt-24h").textContent = d.alertBtn;
-
-      document.getElementById("tab-ops-schedule").textContent = d.tabOpsSch;
-      document.getElementById("tab-ops-okr").textContent = d.tabOpsOkr;
-      document.getElementById("txt-ops-action-title").textContent = d.opsActionTitle;
-      document.getElementById("txt-ops-action-sub").innerHTML = d.opsActionSub;
-      document.getElementById("btn-ops-add").textContent = d.opsAddBtn;
-
-      document.getElementById("tab-biz-budget").textContent = d.tabBizBud;
-      document.getElementById("tab-biz-okr").textContent = d.tabBizOkr;
-      document.getElementById("txt-biz-action-title").textContent = d.bizActionTitle;
-      document.getElementById("txt-biz-action-sub").innerHTML = d.bizActionSub;
-      document.getElementById("btn-biz-add").textContent = d.bizAddBtn;
-
-      document.getElementById("txt-samr-title").textContent = d.samrTitle;
-      document.getElementById("txt-samr-sub").textContent = d.samrSub;
-      document.getElementById("btn-samr-add").textContent = d.samrAddBtn;
-
-      document.getElementById("rep-head-title").textContent = d.repTitle;
-      document.getElementById("rep-head-sub").textContent = d.repSub;
-      document.getElementById("rep-kpi-1-t").textContent = d.repKpi1T;
-      document.getElementById("rep-kpi-1-h").textContent = d.repKpi1H;
-      document.getElementById("rep-kpi-2-t").textContent = d.repKpi2T;
-      document.getElementById("rep-kpi-2-h").textContent = d.repKpi2H;
-      document.getElementById("rep-kpi-3-t").textContent = d.repKpi3T;
-      document.getElementById("rep-kpi-3-h").textContent = d.repKpi3H;
-      document.getElementById("rep-kpi-4-t").textContent = d.repKpi4T;
-      document.getElementById("rep-kpi-4-h").textContent = d.repKpi4H;
-      document.getElementById("rep-chart-pipe-t").textContent = d.repChartPipeT;
-      document.getElementById("rep-chart-donut-t").textContent = d.repChartDonutT;
-      document.getElementById("rep-leg-1").textContent = d.repLeg1;
-      document.getElementById("rep-leg-2").textContent = d.repLeg2;
-      document.getElementById("rep-leg-3").textContent = d.repLeg3;
-      document.getElementById("rep-leg-4").textContent = d.repLeg4;
-      document.getElementById("rep-text-sec-t").textContent = d.repTextSecT;
-      document.getElementById("rep-card-1-t").textContent = d.repCard1T;
-      document.getElementById("rep-card-1-c").textContent = d.repCard1C;
-      document.getElementById("rep-card-2-t").textContent = d.repCard2T;
-      document.getElementById("rep-card-2-c").textContent = d.repCard2C;
-
-      renderAllViews();
-    }
-
-    function switchNav(navKey) {
-      document.querySelectorAll(".panel-view").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
-      
-      const titles = {
-        roadmap: globalDict[currentLang].pageTitleRoadmap,
-        ops: globalDict[currentLang].pageTitleOps,
-        biz: globalDict[currentLang].pageTitleBiz,
-        samr: globalDict[currentLang].pageTitleSamr,
-        report: globalDict[currentLang].pageTitleReport
-      };
-
-      document.getElementById(`view-${navKey}`).classList.add("active");
-      document.getElementById("pageTitle").textContent = titles[navKey];
-      event.currentTarget.classList.add("active");
-    }
-
-    function switchSubTab(parentKey, tabKey) {
-      const parent = document.getElementById(`view-${parentKey}`);
-      parent.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      parent.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      event.currentTarget.classList.add("active");
-      document.getElementById(`${parentKey}-sub-${tabKey}`).classList.add("active");
-    }
-
-    /* 60% 產研與 UX 優化表格 */
-    function renderOpsTable() {
-      const tbody = document.getElementById("opsTableBody");
-      tbody.innerHTML = "";
-
-      const opsTasks = tasks.filter(t => t.type === 'ops');
-      opsTasks.forEach(op => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="text" value="${op.name}" oninput="syncTaskName(${op.id}, this.value)"></td>
-          <td><input type="text" value="${op.primary}" oninput="syncTaskPrimary(${op.id}, this.value)"></td>
-          <td><input type="text" value="${op.secondary}" oninput="syncTaskSecondary(${op.id}, this.value)"></td>
-          <td><input type="text" value="${op.criteria || ''}" onchange="op.criteria=this.value"></td>
-          <td>
-            <select onchange="updateOpsStatus(${op.id}, this.value)">
-              <option ${op.jiraStatus === 'backlog' ? 'selected' : ''}>${currentLang==='zh'?'待啟動 (Backlog)':'Backlog'}</option>
-              <option ${op.jiraStatus === 'dev' ? 'selected' : ''}>${currentLang==='zh'?'進行中 (Dev)':'In Dev'}</option>
-              <option ${op.jiraStatus === 'test' ? 'selected' : ''}>${currentLang==='zh'?'測試中 (Test)':'In Test'}</option>
-              <option ${op.jiraStatus === 'publish' ? 'selected' : ''}>${currentLang==='zh'?'已發版 (Publish)':'Published'}</option>
-            </select>
-          </td>
-          <td><input type="number" value="${op.progress}" min="0" max="100" style="width:60px;" oninput="updateOpsProgress(${op.id}, this.value)"> %</td>
-          <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="deleteTaskDirect(${op.id})">${currentLang==='zh'?'刪除':'Delete'}</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function addOpsItemPrompt() {
-      const name = prompt(currentLang==='zh'?"請輸入支付產品功能/User Story 名稱：":"Enter Feature / User Story Name:", "Apple Pay / Google Pay 快捷支付對接");
-      if (!name) return;
-      const primary = prompt(currentLang==='zh'?"請輸入【主責任單位】：":"Primary Lead Unit:", "產品 PM (陳虹汝)") || "產品團隊";
-      const secondary = prompt(currentLang==='zh'?"請輸入【次責任單位】：":"Secondary Lead Unit:", "前台 iOS/Android 組") || "研發組";
-      const criteria = prompt(currentLang==='zh'?"驗收標準 (Definition of Done)：":"Definition of Done (DoD):", "通過 Sandbox 充值測試並完成 UI 審核") || "完成簽核驗收";
-      const duration = Number(prompt(currentLang==='zh'?"工期時長 (週數)：":"Duration (Weeks):", "2.0")) || 2.0;
-
-      const newTask = {
-        id: Date.now(),
-        key: "PAY-" + Math.floor(100 + Math.random() * 900),
-        name,
-        primary,
-        secondary,
-        criteria,
-        type: "ops",
-        color: JIRA_COLORS[Math.floor(Math.random() * JIRA_COLORS.length)],
-        start: 2.0,
-        duration: duration,
-        progress: 0,
-        jiraStatus: "backlog"
-      };
-
-      tasks.push(newTask);
-      renderAllViews();
-    }
-
-    function updateOpsStatus(id, statusVal) {
-      const t = tasks.find(x => x.id === id);
-      if (t) {
-        if (statusVal.includes('已發版') || statusVal.includes('Publish')) { t.jiraStatus = 'publish'; t.progress = 100; }
-        else if (statusVal.includes('待啟動') || statusVal.includes('Backlog')) { t.jiraStatus = 'backlog'; t.progress = 0; }
-        else if (statusVal.includes('測試中') || statusVal.includes('Test')) { t.jiraStatus = 'test'; t.progress = 85; }
-        else { t.jiraStatus = 'dev'; if (t.progress === 0 || t.progress === 100) t.progress = 50; }
-        renderAllViews();
-      }
-    }
-
-    function updateOpsProgress(id, val) {
-      const t = tasks.find(x => x.id === id);
-      if (t) {
-        t.progress = Math.min(100, Math.max(0, Number(val) || 0));
-        renderGantt();
-        renderReportPipeline();
-        updatePIP();
-      }
-    }
-
-    /* 40% 清算與風控合規表格 */
-    function renderBizTable() {
-      const tbody = document.getElementById("bizTableBody");
-      tbody.innerHTML = "";
-
-      let totalVolume = 0;
-      let totalDispute = 0;
-
-      const bizTasks = tasks.filter(t => t.type === 'biz');
-      bizTasks.forEach(b => {
-        const vol = Number(b.budget) || 0;
-        const dispute = Number(b.cost) || 0;
-        const netProfit = vol - dispute;
-        const cbRate = vol > 0 ? ((dispute / vol) * 100) : 0;
-
-        totalVolume += vol;
-        totalDispute += dispute;
-
-        let badgeHtml = "";
-        if (vol === 0 && dispute === 0) {
-          badgeHtml = `<span class="status-badge" style="background:#ebecf0; color:#5e6c84;">SOP 知識庫</span>`;
-        } else if (cbRate > 0.15) {
-          badgeHtml = `
-            <span class="status-badge badge-danger" title="${currentLang==='zh'?'拒付率高於 0.15% 金融紅線！甘特圖進度條已同步亮起紅色 Flag 警報':'Chargeback rate > 0.15%! Red flag alert rendered on Gantt bar'}">
-              🚨 ${currentLang==='zh'?'超標預警':'Breached'} (${cbRate.toFixed(2)}%) - ${currentLang==='zh'?'需召開 24H 緊急風控會議':'24h Risk Meeting Required'}
-            </span>
-          `;
-        } else {
-          badgeHtml = `<span class="status-badge badge-safe">🟢 ${currentLang==='zh'?'合規安全':'Safe'} (${cbRate.toFixed(2)}%) - ${currentLang==='zh'?'受控範圍':'Under Control'}</span>`;
-        }
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="text" value="${b.name}" oninput="syncTaskName(${b.id}, this.value)"></td>
-          <td><input type="text" value="${b.primary}" oninput="syncTaskPrimary(${b.id}, this.value)"></td>
-          <td><input type="text" value="${b.secondary}" oninput="syncTaskSecondary(${b.id}, this.value)"></td>
-          <td><input type="number" min="0" step="1000" value="${b.budget || 0}" oninput="updateBizNumbers(${b.id}, 'budget', this.value)"></td>
-          <td><input type="number" min="0" step="50" value="${b.cost || 0}" oninput="updateBizNumbers(${b.id}, 'cost', this.value)"></td>
-          <td id="profit-${b.id}" style="font-weight:700; color:#172b4d;">
-            $${netProfit.toLocaleString()}
-          </td>
-          <td id="badge-${b.id}">${badgeHtml}</td>
-          <td>
-            <select onchange="b.stage=this.value">
-              <option ${(b.stage||'').includes('第一階段')?'selected':''}>${currentLang==='zh'?'第一階段 (清算對接)':'Phase 1 (Integration)'}</option>
-              <option ${(b.stage||'').includes('第二階段')?'selected':''}>${currentLang==='zh'?'第二階段 (UAT驗收)':'Phase 2 (UAT & Testing)'}</option>
-              <option ${(b.stage||'').includes('已上線')?'selected':''}>${currentLang==='zh'?'正式上線 (Production)':'Production Live'}</option>
-            </select>
-          </td>
-          <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="deleteTaskDirect(${b.id})">${currentLang==='zh'?'刪除':'Delete'}</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const avgCbRate = totalVolume > 0 ? ((totalDispute / totalVolume) * 100).toFixed(2) : "0.00";
-      isGlobalRiskBreached = Number(avgCbRate) > 0.15;
-
-      const okrMarginSpan = document.getElementById("okr-biz-margin-indicator");
-      const okrActualInput = document.getElementById("okr-actual-margin");
-
-      if (okrMarginSpan) {
-        okrMarginSpan.textContent = currentLang === 'zh'
-          ? `加權拒付率: ${avgCbRate}% ${isGlobalRiskBreached ? '🚨 高危預警' : '🟢 合規安全'}`
-          : `Weighted Chargeback: ${avgCbRate}% ${isGlobalRiskBreached ? '🚨 High Risk' : '🟢 Safe'}`;
-        okrMarginSpan.style.color = isGlobalRiskBreached ? '#ffab00' : '#b3d4ff';
-      }
-      if (okrActualInput) {
-        okrActualInput.value = currentLang === 'zh'
-          ? `信用卡加權拒付爭議率: ${avgCbRate}% (${isGlobalRiskBreached ? '高於 0.15% 底線！已觸發風控緊急機制' : '安全受控'})`
-          : `Weighted Chargeback Rate: ${avgCbRate}% (${isGlobalRiskBreached ? 'Above 0.15% Threshold! Risk Alert Fired' : 'Target Met'})`;
-        okrActualInput.style.color = isGlobalRiskBreached ? '#bf2600' : '#006644';
-      }
-
-      const ganttAlertBar = document.getElementById("gantt-margin-alert-bar");
-      const alertBarVal = document.getElementById("alert-bar-margin-val");
-      if (ganttAlertBar) {
-        ganttAlertBar.style.display = isGlobalRiskBreached ? 'flex' : 'none';
-        if (alertBarVal) alertBarVal.textContent = `${avgCbRate}%`;
-      }
-
-      const repMargin = document.getElementById("rep-kpi-2-v");
-      const repMarginHint = document.getElementById("rep-kpi-2-h");
-      if (repMargin) repMargin.textContent = `${avgCbRate}%`;
-      if (repMarginHint) {
-        repMarginHint.textContent = isGlobalRiskBreached
-          ? (currentLang==='zh'?`⚠️ 高於 OKR 底線 (≤0.15%)`:`⚠️ Above Target (≤0.15%)`)
-          : (currentLang==='zh'?`優於 OKR 底線 (≤0.15%)`:`Outperforms Target (≤0.15%)`);
-        repMarginHint.style.color = isGlobalRiskBreached ? `#bf2600` : `#006644`;
-      }
-
-      updatePIP();
-    }
-
-    function addBudgetItemPrompt() {
-      const name = prompt(currentLang==='zh'?"請輸入跨國清算對接或風控模組名稱：":"Enter Settlement/Compliance Module Name:", "東南亞法幣清算通道 (THB/VND) 擴展");
-      if (!name) return;
-      const primary = prompt(currentLang==='zh'?"請輸入【主責任單位】：":"Primary Lead Unit:", "支付清算 PM (陳虹汝)") || "清算組";
-      const secondary = prompt(currentLang==='zh'?"請輸入【次責任單位】：":"Secondary Lead Unit:", "外部支付通道機構") || "合作夥伴";
-      const budget = Number(prompt(currentLang==='zh'?"月預估清算交易額 (USD)：":"Est. Monthly Volume (USD):", "600000")) || 0;
-      const cost = Number(prompt(currentLang==='zh'?"預估爭議扣款損失 (USD)：":"Est. Chargeback (USD):", "600")) || 0;
-      const duration = Number(prompt(currentLang==='zh'?"對接工期 (週數)：":"Duration (Weeks):", "2.0")) || 2.0;
-
-      const newTask = {
-        id: Date.now(),
-        key: "PAY-" + Math.floor(100 + Math.random() * 900),
-        name,
-        primary,
-        secondary,
-        type: "biz",
-        budget,
-        cost,
-        stage: "第一階段 (清算對接)",
-        color: "#6554c0",
-        start: 2.0,
-        duration: duration,
-        progress: 0,
-        jiraStatus: "backlog"
-      };
-
-      tasks.push(newTask);
-      renderAllViews();
-    }
-
-    function updateBizNumbers(id, field, value) {
-      const item = tasks.find(b => b.id === id);
-      if (item) {
-        item[field] = Number(value) || 0;
-        renderBizTable();
-        renderGantt();
-      }
-    }
-
-    function syncTaskName(id, val) {
-      const t = tasks.find(x => x.id === id);
-      if (t) {
-        t.name = val;
-        renderGantt();
-        renderJiraBoard();
-        renderReportPipeline();
-      }
-    }
-
-    function syncTaskPrimary(id, val) {
-      const t = tasks.find(x => x.id === id);
-      if (t) {
-        t.primary = val;
-        renderGantt();
-        renderJiraBoard();
-      }
-    }
-
-    function syncTaskSecondary(id, val) {
-      const t = tasks.find(x => x.id === id);
-      if (t) {
-        t.secondary = val;
-        renderGantt();
-        renderJiraBoard();
-      }
-    }
-
-    function deleteTaskDirect(id) {
-      if (confirm(currentLang==='zh'?"確認移除此項任務？該操作將自所有視圖與看板中同步刪除。":"Delete this task from all views and boards?")) {
-        tasks = tasks.filter(x => x.id !== id);
-        renderAllViews();
-      }
-    }
-
-    function triggerUrgentMeetingPrompt() {
-      const msg = currentLang === 'zh'
-        ? "🚨【風控拒付率告警通知已派發】\n" +
-          "收件單位：支付清算 PM、風控研發組、法務合規組、前台支付通道組\n" +
-          "告警事由：信用卡跨國清算拒付率 (Chargeback) 超過 0.15% 風險紅線\n" +
-          "要求行動：必須於 24 小時內召集跨部門會議，啟動 3DS 嚴格校驗或動態阻斷高危卡段！\n\n" +
-          "是否立即前往「🗣️ 跨部門開會 SAMR」面板建立會議紀錄？"
-        : "🚨 [RISK BREACH ALERT DISPATCHED]\n" +
-          "To: Settlement PM, Risk Eng, Legal Compliance, Channel Partners\n" +
-          "Cause: Cross-border chargeback rate exceeded 0.15% risk ceiling\n" +
-          "Action Required: Convene a 24-hr emergency meeting to enforce strict 3DS or block high-risk BIN ranges!\n\n" +
-          "Navigate to SAMR Decision Hub now?";
-      
-      if (confirm(msg)) {
-        switchNav('samr');
-      }
-    }
-
-    function updatePIP() {
-      const opsTasks = tasks.filter(t => t.type === 'ops');
-      const avgOps = opsTasks.reduce((acc, c) => acc + c.progress, 0) / (opsTasks.length || 1);
-
-      let totalVol = 0;
-      let totalDispute = 0;
-      const bizTasks = tasks.filter(t => t.type === 'biz');
-      bizTasks.forEach(b => {
-        totalVol += Number(b.budget) || 0;
-        totalDispute += Number(b.cost) || 0;
-      });
-      const cbRate = totalVol > 0 ? ((totalDispute / totalVol) * 100) : 0;
-      const complianceScore = Math.max(0, 100 - (cbRate * 400));
-
-      const weighted = Math.round((avgOps * 0.6) + (complianceScore * 0.4));
-
-      document.getElementById("pipValue").textContent = `${weighted}%`;
-      document.getElementById("pipSub").textContent = currentLang === 'zh'
-        ? `60% 產研: ${Math.round(avgOps)}% | 40% 風控合規率: ${Math.round(complianceScore)}%`
-        : `60% Ops: ${Math.round(avgOps)}% | 40% Compliance: ${Math.round(complianceScore)}%`;
-      
-      const pipRing = document.getElementById("pipValue");
-      if (cbRate > 0.15) {
-        pipRing.style.borderColor = "#de350b";
-      } else {
-        pipRing.style.borderColor = "#36b37e";
-      }
-
-      const repPip = document.getElementById("rep-kpi-1-v");
-      if (repPip) repPip.textContent = `${weighted}%`;
-    }
-
-    /* 甘特圖渲染 */
     function renderGantt() {
       const treeContainer = document.getElementById("treeRows");
-      const timelineHeader = document.getElementById("timelineHeader");
+      const timelineHdr = document.getElementById("timelineHeader");
       const timelineRows = document.getElementById("timelineRows");
 
       treeContainer.innerHTML = "";
-      timelineHeader.innerHTML = "";
+      timelineHdr.innerHTML = "";
       timelineRows.innerHTML = "";
 
+      // 產生 8 週時間刻度
       for (let i = 1; i <= WEEKS_COUNT; i++) {
         const col = document.createElement("div");
         col.className = "week-col";
-        col.textContent = currentLang==='zh' ? `第 ${i} 週` : `Week ${i}`;
-        timelineHeader.appendChild(col);
+        col.textContent = `第 ${i} 週 (W${i})`;
+        timelineHdr.appendChild(col);
       }
 
-      tasks.forEach(task => {
-        const isBizTask = task.type === 'biz';
-        
-        let isItemRiskWarning = false;
-        let itemCbRate = 0;
-        if (isBizTask && (Number(task.budget) > 0 || Number(task.cost) > 0)) {
-          const vol = Number(task.budget) || 0;
-          const dispute = Number(task.cost) || 0;
-          itemCbRate = vol > 0 ? (dispute / vol) * 100 : 0;
-          if (itemCbRate > 0.15) {
-            isItemRiskWarning = true;
-          }
-        }
-
-        const okrLabel = isBizTask 
-          ? `<span class="okr-type-badge okr-badge-o2">[${currentLang==='zh'?'40% 風控 (O2)':'40% Risk (O2)'}]</span>`
-          : `<span class="okr-type-badge okr-badge-o1">[${currentLang==='zh'?'60% 產研 (O1)':'60% Ops (O1)'}]</span>`;
-
-        const redFlagHtml = isItemRiskWarning
-          ? `<span class="red-flag-alert" onclick="triggerUrgentMeetingPrompt()" title="${currentLang==='zh'?`此渠道拒付率為 ${itemCbRate.toFixed(2)}%（超過 0.15% 紅線）！點擊召開 24H 緊急風控會議`:`Chargeback rate is ${itemCbRate.toFixed(2)}% (>0.15%)! Click to convene 24h meeting`}">🚩 [${currentLang==='zh'?`拒付率 ${itemCbRate.toFixed(2)}%`:`CB Alert ${itemCbRate.toFixed(2)}%`}]</span>`
-          : '';
-
-        const samr = samrRecords.find(s => s.taskId === task.id);
-        const samrBadge = samr 
-          ? `<span class="samr-annotation" title="${currentLang==='zh'?'【會議摘要】':'[Summary]'}${samr.summary}\n${currentLang==='zh'?'【行動】':'[Action]'}${samr.action}\n${currentLang==='zh'?'【可衡量結果】':'[Result]'}${samr.result}">📌 SAMR</span>` 
-          : '';
-
+      pipelines.forEach(item => {
+        // 左側任務列表
         const treeRow = document.createElement("div");
-        treeRow.className = "tree-row";
+        treeRow.className = `tree-row ${item.isMain ? 'row-main' : 'row-sub'}`;
+        
+        const badgeHtml = item.isMain
+          ? `<span class="pipeline-badge badge-main">主要 PIPELINE</span>`
+          : `<span class="pipeline-badge badge-sub">SUB</span>`;
+
         treeRow.innerHTML = `
-          <div class="tree-info">
-            <span class="color-dot" style="background: ${isItemRiskWarning ? '#de350b' : task.color};" onclick="openColorPicker(event, ${task.id})" title="${currentLang==='zh'?'點擊切換顏色':'Change Color'}"></span>
-            ${okrLabel}
-            <span ondblclick="editTaskName(${task.id})" title="${currentLang==='zh'?'雙擊改名':'Double click to rename'}" style="cursor:pointer; font-weight:600; ${isItemRiskWarning ? 'color:#bf2600;' : ''}">${task.name}</span>
-            <span style="font-size:10px; color:#6b778c;">[${task.primary} / ${task.secondary}]</span>
-            ${redFlagHtml}
-            ${samrBadge}
+          <div class="tree-info" style="cursor:pointer;" onclick="openEditModal(${item.id})">
+            ${badgeHtml}
+            <span title="${item.name}">${item.name}</span>
+            <span style="font-size:10px; color:#6b778c; margin-left:6px;">[${item.primary}]</span>
           </div>
-          <span style="color:#de350b; cursor:pointer; font-size:11px;" onclick="deleteTaskDirect(${task.id})">✕</span>
+          <span style="cursor:pointer; color:#de350b; font-size:11px;" onclick="deleteTask(${item.id})">✕</span>
         `;
         treeContainer.appendChild(treeRow);
 
+        // 右側甘特網格列
         const row = document.createElement("div");
         row.className = "timeline-row";
         for (let i = 0; i < WEEKS_COUNT; i++) {
@@ -1644,60 +414,38 @@
           row.appendChild(grid);
         }
 
+        // 甘特條
         const bar = document.createElement("div");
-        bar.className = `gantt-bar ${isItemRiskWarning ? 'bar-breached' : ''}`;
-        bar.style.backgroundColor = isItemRiskWarning ? '#de350b' : task.color;
-        bar.style.left = `${task.start * currentCellWidth}px`;
-        bar.style.width = `${task.duration * currentCellWidth}px`;
-        
-        const flagText = isItemRiskWarning ? ` 🚩[CB ${itemCbRate.toFixed(2)}% > 0.15% | 24H 需議價!]` : '';
-        const okrPrefix = isBizTask ? '[40% O2]' : '[60% O1]';
-        const barAnnotation = samr ? ` • 📌 [${samr.result.substring(0, 8)}...]` : '';
+        bar.className = `gantt-bar ${item.isMain ? 'bar-main' : 'bar-sub'}`;
+        bar.style.left = `${item.start * CELL_WIDTH}px`;
+        bar.style.width = `${item.duration * CELL_WIDTH}px`;
+        bar.innerHTML = `<span>${item.key}: ${item.name} (${item.progress}%)</span>`;
 
-        bar.innerHTML = `
-          <span style="font-weight:700;">${okrPrefix} ${task.name} (${Math.round(task.progress)}%)</span>
-          <span style="font-size:9px; opacity:0.95; margin-left:4px; font-weight:600;">[${task.primary}]${flagText}${barAnnotation}</span>
-        `;
-
-        if (isItemRiskWarning) {
-          bar.setAttribute("title", currentLang==='zh'
-            ? `🚨【此清算模組拒付率超標】當前 Chargeback 為 ${itemCbRate.toFixed(2)}%（高於 0.15% 紅線）！點擊可直接召開 24 小時跨部門風控緊急會議。`
-            : `🚨 [RISK ALERT] Current chargeback is ${itemCbRate.toFixed(2)}% (> 0.15%). Click to convene a 24-hr emergency response meeting.`);
-          bar.onclick = (e) => {
-            if (e.target.classList.contains("resizer")) return;
-            triggerUrgentMeetingPrompt();
-          };
-        } else if (samr) {
-          bar.setAttribute("title", `Summary: ${samr.summary}\nAction: ${samr.action}\nResult: ${samr.result}`);
-        }
-
+        // 縮放把手
         const resizer = document.createElement("div");
         resizer.className = "resizer";
         bar.appendChild(resizer);
 
-        bindGanttInteractions(bar, resizer, task);
+        bindBarDragAndResize(bar, resizer, item);
 
         row.appendChild(bar);
         timelineRows.appendChild(row);
       });
     }
 
-    function bindGanttInteractions(bar, resizer, task) {
+    /* 甘特條平移與伸縮事件 */
+    function bindBarDragAndResize(bar, resizer, item) {
       bar.addEventListener("mousedown", (e) => {
         if (e.target === resizer) return;
         e.preventDefault();
         let startX = e.clientX;
-        let originStart = task.start;
+        let originalStart = item.start;
 
         function onMove(evt) {
-          const deltaWeeks = (evt.clientX - startX) / currentCellWidth;
-          task.start = Math.max(0, originStart + deltaWeeks);
-          bar.style.left = `${task.start * currentCellWidth}px`;
-          task.progress = Math.min(100, Math.max(0, Math.round((task.start / (WEEKS_COUNT - task.duration)) * 100)));
-          renderGantt();
-          updatePIP();
+          const delta = (evt.clientX - startX) / CELL_WIDTH;
+          item.start = Math.max(0, originalStart + delta);
+          bar.style.left = `${item.start * CELL_WIDTH}px`;
         }
-
         function onUp() {
           window.removeEventListener("mousemove", onMove);
           window.removeEventListener("mouseup", onUp);
@@ -1710,17 +458,13 @@
         e.preventDefault();
         e.stopPropagation();
         let startX = e.clientX;
-        let originDuration = task.duration;
+        let originalDuration = item.duration;
 
         function onMove(evt) {
-          const deltaWeeks = (evt.clientX - startX) / currentCellWidth;
-          task.duration = Math.max(0.5, originDuration + deltaWeeks);
-          bar.style.width = `${task.duration * currentCellWidth}px`;
-          task.progress = Math.min(100, Math.max(5, Math.round((task.duration / 3) * 100)));
-          renderGantt();
-          updatePIP();
+          const delta = (evt.clientX - startX) / CELL_WIDTH;
+          item.duration = Math.max(0.5, originalDuration + delta);
+          bar.style.width = `${item.duration * CELL_WIDTH}px`;
         }
-
         function onUp() {
           window.removeEventListener("mousemove", onMove);
           window.removeEventListener("mouseup", onUp);
@@ -1730,141 +474,224 @@
       });
     }
 
-    function initPalettePopover() {
-      const pop = document.getElementById("palettePopover");
-      pop.innerHTML = "";
-      JIRA_COLORS.forEach(color => {
-        const dot = document.createElement("div");
-        dot.style.width = "22px";
-        dot.style.height = "22px";
-        dot.style.borderRadius = "4px";
-        dot.style.background = color;
-        dot.style.cursor = "pointer";
-        dot.onclick = () => {
-          if (currentActiveColorTaskId) {
-            const t = tasks.find(x => x.id === currentActiveColorTaskId);
-            if (t) {
-              t.color = color;
-              renderGantt();
-            }
-          }
-          pop.style.display = "none";
-        };
-        pop.appendChild(dot);
-      });
+    /* ========================================================
+       2. Jira 看板渲染 (點擊卡片直接開啟 Modal)
+       ======================================================== */
+    function renderBoard() {
+      const cols = ['backlog', 'dev', 'test', 'publish'];
+      const counts = { backlog: 0, dev: 0, test: 0, publish: 0 };
 
-      document.addEventListener("click", (e) => {
-        if (!pop.contains(e.target) && !e.target.classList.contains("color-dot")) {
-          pop.style.display = "none";
+      cols.forEach(c => document.getElementById(`col-${c}`).innerHTML = "");
+
+      pipelines.forEach(item => {
+        const status = item.status || 'backlog';
+        if (counts[status] !== undefined) counts[status]++;
+
+        const colEl = document.getElementById(`col-${status}`);
+        if (!colEl) return;
+
+        // 尋找所屬主要 Pipeline 名稱
+        let parentName = "";
+        if (!item.isMain && item.parentId) {
+          const parent = pipelines.find(p => p.id === item.parentId);
+          if (parent) parentName = parent.name.substring(0, 14) + "...";
         }
-      });
-    }
 
-    function openColorPicker(e, taskId) {
-      e.stopPropagation();
-      currentActiveColorTaskId = taskId;
-      const pop = document.getElementById("palettePopover");
-      pop.style.left = `${e.clientX + 10}px`;
-      pop.style.top = `${e.clientY + 10}px`;
-      pop.style.display = "grid";
-    }
+        const card = document.createElement("div");
+        card.className = "jira-card";
+        card.setAttribute("draggable", "true");
+        card.ondragstart = (e) => handleCardDragStart(e, item.id);
 
-    function renderSAMRTable() {
-      const tbody = document.getElementById("samrTableBody");
-      tbody.innerHTML = "";
+        // ★ 核心升級：直接點擊卡片任何地方即開彈窗編輯
+        card.onclick = (e) => {
+          openEditModal(item.id);
+        };
 
-      samrRecords.forEach(record => {
-        const tr = document.createElement("tr");
-        let optionsHtml = `<option value="">-- ${currentLang==='zh'?'未綁定':'Unlinked'} --</option>`;
-        tasks.forEach(t => {
-          optionsHtml += `<option value="${t.id}" ${t.id === record.taskId ? 'selected' : ''}>[${t.type === 'biz' ? '40% O2' : '60% O1'}] ${t.name}</option>`;
-        });
-
-        tr.innerHTML = `
-          <td>
-            <select onchange="updateSAMRField(${record.id}, 'taskId', Number(this.value))">
-              ${optionsHtml}
-            </select>
-          </td>
-          <td><input type="text" value="${record.departments}" onchange="updateSAMRField(${record.id}, 'departments', this.value)"></td>
-          <td><textarea onchange="updateSAMRField(${record.id}, 'summary', this.value)">${record.summary}</textarea></td>
-          <td><textarea onchange="updateSAMRField(${record.id}, 'action', this.value)">${record.action}</textarea></td>
-          <td><textarea onchange="updateSAMRField(${record.id}, 'result', this.value)">${record.result}</textarea></td>
-          <td><button class="btn" style="background:#dfe1e6; color:#172b4d; padding:3px 6px; font-size:11px;" onclick="deleteSAMRRecord(${record.id})">${currentLang==='zh'?'刪除':'Delete'}</button></td>
+        card.innerHTML = `
+          ${parentName ? `<div class="card-parent-tag">📌 ${parentName}</div>` : ''}
+          <div class="card-title">${item.name}</div>
+          <div class="card-footer">
+            <span class="card-key">${item.key || 'TASK'}</span>
+            <span>${item.progress}%</span>
+            <span class="card-assignee">${item.primary.split(' ')[0]}</span>
+          </div>
         `;
-        tbody.appendChild(tr);
+        colEl.appendChild(card);
+      });
+
+      cols.forEach(c => {
+        document.getElementById(`count-${c}`).textContent = counts[c];
       });
     }
 
-    function updateSAMRField(id, field, value) {
-      const rec = samrRecords.find(r => r.id === id);
-      if (rec) {
-        rec[field] = value;
+    /* 看板 Drag & Drop */
+    function handleCardDragStart(e, id) {
+      draggedTaskId = id;
+      e.dataTransfer.setData("text/plain", id);
+    }
+    function allowDrop(e) { e.preventDefault(); }
+    function handleDrop(e, targetStatus) {
+      e.preventDefault();
+      const id = Number(e.dataTransfer.getData("text/plain")) || draggedTaskId;
+      const item = pipelines.find(p => p.id === id);
+      if (item) {
+        item.status = targetStatus;
+        if (targetStatus === 'publish') item.progress = 100;
+        if (targetStatus === 'backlog' && item.progress === 100) item.progress = 0;
+        renderBoard();
         renderGantt();
       }
     }
 
-    function addNewSAMRRecord() {
-      const newRec = {
+    /* ========================================================
+       3. 輕量點擊編輯彈窗 (Modal Logic)
+       ======================================================== */
+    function openEditModal(id) {
+      editingTaskId = id;
+      const item = pipelines.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById("modalTitle").textContent = `編輯任務 [${item.key}]`;
+      document.getElementById("modalTaskName").value = item.name;
+      document.getElementById("modalTaskLevel").value = item.isMain ? 'main' : 'sub';
+      document.getElementById("modalAssignee").value = item.primary;
+      document.getElementById("modalStatus").value = item.status || 'backlog';
+      document.getElementById("modalProgress").value = item.progress || 0;
+
+      // 填充所屬 Main Pipeline 下拉選單
+      populateParentSelect(item.parentId);
+      toggleParentSelect();
+
+      document.getElementById("editModalBackdrop").classList.add("open");
+    }
+
+    function openCreateModal() {
+      editingTaskId = null; // 代表新增
+      document.getElementById("modalTitle").textContent = "＋ 建立新 Pipeline / 任務";
+      document.getElementById("modalTaskName").value = "";
+      document.getElementById("modalTaskLevel").value = "sub";
+      document.getElementById("modalAssignee").value = "產品 PM (陳虹汝)";
+      document.getElementById("modalStatus").value = "dev";
+      document.getElementById("modalProgress").value = 0;
+
+      populateParentSelect();
+      toggleParentSelect();
+
+      document.getElementById("editModalBackdrop").classList.add("open");
+    }
+
+    function quickAdd(status) {
+      const name = prompt("請輸入任務名稱：", "優化交易驗證體驗");
+      if (!name) return;
+      const newItem = {
         id: Date.now(),
-        taskId: tasks.length > 0 ? tasks[0].id : null,
-        departments: currentLang==='zh'?"清算 PM × 風控研發組 × 通道夥伴":"Settlement PM × Risk Eng × Partners",
-        summary: currentLang==='zh'?"特定卡段拒付爭議率突破 0.15%，召開 24H 緊急應變會議。":"BIN range chargeback exceeded 0.15%; convened 24-hr response meeting.",
-        action: currentLang==='zh'?"於風控引擎部署動態 3DS 攔截與高危卡段速率限制 (Rate Limit)。":"Enforce dynamic 3DS interception and BIN-level rate limiting in risk engine.",
-        result: currentLang==='zh'?"成功攔截 99.4% 可疑欺詐交易，預期 5 個工作日內爭議率回落至 0.12%。":"Blocked 99.4% suspicious txns; target to lower dispute rate to 0.12% in 5 days."
+        isMain: false,
+        key: "PAY-" + Math.floor(100 + Math.random() * 900),
+        name,
+        primary: "產品 PM (陳虹汝)",
+        start: 2,
+        duration: 1.5,
+        status: status,
+        progress: status === 'publish' ? 100 : 20
       };
-      samrRecords.push(newRec);
-      renderSAMRTable();
+      pipelines.push(newItem);
+      renderBoard();
       renderGantt();
     }
 
-    function deleteSAMRRecord(id) {
-      samrRecords = samrRecords.filter(r => r.id !== id);
-      renderSAMRTable();
-      renderGantt();
+    function populateParentSelect(selectedId) {
+      const select = document.getElementById("modalParentId");
+      select.innerHTML = "";
+      const mains = pipelines.filter(p => p.isMain);
+      mains.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.name;
+        if (selectedId && selectedId === m.id) opt.selected = true;
+        select.appendChild(opt);
+      });
     }
 
-    function editTaskName(id) {
-      const t = tasks.find(x => x.id === id);
-      const name = prompt(currentLang==='zh'?"修改任務名稱：":"Rename Task:", t.name);
-      if (name) {
-        t.name = name;
-        renderAllViews();
-      }
+    function toggleParentSelect() {
+      const level = document.getElementById("modalTaskLevel").value;
+      document.getElementById("parentSelectGroup").style.display = (level === 'sub') ? 'flex' : 'none';
     }
 
-    function openAddTaskModal() {
-      const isBiz = confirm(currentLang==='zh'
-        ? "選擇任務歸屬 OKR 目標：\n[確定] = 40% 跨國清算與風控合規 (Objective 2)\n[取消] = 60% 支付體驗與產研交付 (Objective 1)"
-        : "Select Target OKR:\n[OK] = 40% Settlement & Risk Compliance (Objective 2)\n[Cancel] = 60% Payment UX & Delivery (Objective 1)");
-      if (isBiz) {
-        addBudgetItemPrompt();
+    function closeEditModal() {
+      document.getElementById("editModalBackdrop").classList.remove("open");
+    }
+
+    function saveModalEdit() {
+      const name = document.getElementById("modalTaskName").value.trim();
+      if (!name) { alert("任務名稱不可為空"); return; }
+
+      const isMain = document.getElementById("modalTaskLevel").value === 'main';
+      const assignee = document.getElementById("modalAssignee").value.trim() || "產品 PM";
+      const status = document.getElementById("modalStatus").value;
+      const progress = Number(document.getElementById("modalProgress").value) || 0;
+      const parentId = isMain ? null : Number(document.getElementById("modalParentId").value);
+
+      if (editingTaskId) {
+        // 更新現有任務
+        const item = pipelines.find(p => p.id === editingTaskId);
+        if (item) {
+          item.name = name;
+          item.isMain = isMain;
+          item.primary = assignee;
+          item.status = status;
+          item.progress = progress;
+          item.parentId = parentId;
+        }
       } else {
-        addOpsItemPrompt();
+        // 新增任務
+        pipelines.push({
+          id: Date.now(),
+          isMain,
+          key: isMain ? "EPIC-" + Math.floor(10 + Math.random() * 90) : "PAY-" + Math.floor(100 + Math.random() * 900),
+          name,
+          primary: assignee,
+          start: 2,
+          duration: isMain ? 4 : 2,
+          status,
+          progress,
+          parentId
+        });
+      }
+
+      closeEditModal();
+      renderBoard();
+      renderGantt();
+    }
+
+    function deleteTask(id) {
+      if (confirm("確認移除此項任務？")) {
+        pipelines = pipelines.filter(p => p.id !== id && p.parentId !== id);
+        renderBoard();
+        renderGantt();
       }
     }
 
-    function renderReportPipeline() {
-      const container = document.getElementById("reportPipelineList");
-      if (!container) return;
-      container.innerHTML = "";
+    /* 左右分界線伸縮 (Splitter Resizer) */
+    function initSplitter() {
+      const resizer = document.getElementById("splitterResizer");
+      resizer.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        resizer.classList.add("resizing");
+        const startX = e.clientX;
+        const initialWidth = currentTreeWidth;
 
-      tasks.slice(0, 5).forEach((t, idx) => {
-        const okrPrefix = t.type === 'biz'
-          ? `[${currentLang==='zh'?'40% 風控 (O2)':'40% Risk (O2)'}]`
-          : `[${currentLang==='zh'?'60% 產研 (O1)':'60% Ops (O1)'}]`;
-        const color = t.type === 'biz' ? '#6554c0' : '#0052cc';
-
-        const row = document.createElement("div");
-        row.className = "pipe-row";
-        row.innerHTML = `
-          <div class="pipe-meta">
-            <span>${idx + 1}. ${okrPrefix} ${t.name} [${t.primary} / ${t.secondary}]</span>
-            <span>${Math.round(t.progress)}%</span>
-          </div>
-          <div class="pipe-bar-bg"><div class="pipe-bar-fill" style="width:${Math.round(t.progress)}%; background:${color};"></div></div>
-        `;
-        container.appendChild(row);
+        function onMouseMove(moveEvent) {
+          const delta = moveEvent.clientX - startX;
+          currentTreeWidth = Math.min(650, Math.max(380, initialWidth + delta));
+          document.documentElement.style.setProperty("--tree-w", `${currentTreeWidth}px`);
+        }
+        function onMouseUp() {
+          resizer.classList.remove("resizing");
+          window.removeEventListener("mousemove", onMouseMove);
+          window.removeEventListener("mouseup", onMouseUp);
+        }
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
       });
     }
   </script>
